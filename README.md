@@ -57,17 +57,14 @@ Apps sign in through the browser: add the server, and the first time the app ask
 some projects or disconnect it under Settings → Connected apps. The OAuth flow follows the MCP authorization spec
 (client metadata documents, dynamic registration, PKCE, tokens bound to `/mcp`, rotating refresh tokens).
 
-**Claude Code**, with the plugin (MCP server plus the litledger skill):
+**Claude Code**: the plugin brings the MCP server and the litledger skill. Run these in a terminal; the last one opens
+the browser, where you click **Allow**. Settings → Connected apps shows them with your server's address filled in.
 
 ```bash
 claude plugin marketplace add sorbet-ai/litledger
-claude plugin install litledger@litledger
+claude plugin install litledger@litledger --config server=http://127.0.0.1:8765   # your server's address
+claude mcp login plugin:litledger:litledger
 ```
-
-Then run `/mcp` in Claude Code, pick
-litledger and choose Authenticate. If the server isn't at `http://127.0.0.1:8765`, start Claude Code with
-`LITLEDGER_URL=<address>`. Without the plugin:
-`claude mcp add --transport http --scope user litledger http://127.0.0.1:8765/mcp` and `claude mcp login litledger`.
 
 **Codex** (app and CLI share `~/.codex/config.toml`). Add your server, then sign in:
 
@@ -85,7 +82,7 @@ hide the plugin's copy of the server in that repo so tools aren't listed twice:
 
 ```json
 // .mcp.json
-{ "mcpServers": { "litledger": { "type": "http", "url": "${LITLEDGER_URL:-http://127.0.0.1:8765}/mcp",
+{ "mcpServers": { "litledger": { "type": "http", "url": "http://127.0.0.1:8765/mcp",
   "headers": { "X-Litledger-Project": "thesis" } } } }
 // .claude/settings.json
 { "deniedMcpServers": [{ "serverName": "plugin:litledger:litledger" }] }
@@ -103,8 +100,7 @@ And `.litledger.toml` (`project = "thesis"`) for the CLI.
 
 **Terminals and scripts**: `litledger login --url http://127.0.0.1:8765` shows a code and opens the approval page
 (Settings → Connected apps); the token is saved to `~/.litledger/token` and acts for you. With `--claude` it also
-runs `claude mcp add` and `claude mcp login`, so Claude Code signs in through the browser (OAuth) and never holds a
-token. For CI, make an API token under Settings → API tokens (or a shared one under Admin → Apps & tokens, so it
+runs the Claude Code commands above, so Claude Code signs in through the browser (OAuth) and never holds a token. For CI, make an API token under Settings → API tokens (or a shared one under Admin → Apps & tokens, so it
 outlives your account).
 
 More tools for a client: header `X-Litledger-Tools: core,graph,maps,check,admin` (or `all`). The bundled skill

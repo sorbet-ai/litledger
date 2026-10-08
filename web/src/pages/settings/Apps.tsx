@@ -8,12 +8,17 @@ import { AgentTable } from "./agents";
 /** Plugin installs name the litledger repository itself (a local clone or its git URL); there is no hosted marketplace. */
 const MARKETPLACE = "sorbet-ai/litledger";
 const REPO_NOTE = <>Or a local clone of the repo instead of <code>{MARKETPLACE}</code>.</>;
+/** Installs the plugin pointed at this server and signs it in; same commands as `litledger login --claude`. */
+const claudeSetup = (origin: string) => [
+  `claude plugin marketplace add ${MARKETPLACE}`,
+  `claude plugin install litledger@litledger --config server=${origin}`,
+  "claude mcp login plugin:litledger:litledger",
+].join("\n");
 
 function ConnectApps() {
   const origin = window.location.origin;
   const mcp = `${origin}/mcp`;
   const [tab, setTab] = useState<"claude" | "codex" | "other" | "terminal">("claude");
-  const custom = origin !== "http://127.0.0.1:8765";
   return (
     <div className="panel pad stack" style={{ gap: 14 }}>
       <div>
@@ -26,11 +31,7 @@ function ConnectApps() {
         ))}
       </div>
       {tab === "claude" && (
-        <div className="stack" style={{ gap: 12 }}>
-          <CopyBlock title="Plugin" text={`claude plugin marketplace add ${MARKETPLACE}\nclaude plugin install litledger@litledger`}
-                   note={<>{REPO_NOTE} Then <code>/mcp</code> → litledger → Authenticate.{custom && <> Set <code>LITLEDGER_URL={origin}</code> first.</>}</>} />
-          <CopyBlock title="Or just the server" text={`claude mcp add --transport http --scope user litledger ${mcp}\nclaude mcp login litledger`} />
-        </div>
+        <CopyBlock title="Terminal" text={claudeSetup(origin)} note="A page opens here; click Allow." />
       )}
       {tab === "codex" && (
         <div className="stack" style={{ gap: 12 }}>

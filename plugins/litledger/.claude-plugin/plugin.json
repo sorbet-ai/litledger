@@ -1,10 +1,19 @@
 {
   "name": "litledger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/sorbet-ai/litledger",
   "repository": "https://github.com/sorbet-ai/litledger",
   "description": "Literature ledger for research agents: find, capture, read, tag and cite papers; typed knowledge and mind maps. Connects to your litledger server and signs in through the browser.",
   "author": { "name": "Sorbet" },
   "keywords": ["research", "papers", "bibliography", "citations", "mcp"],
+  "userConfig": {
+    "server": {
+      "type": "string",
+      "title": "litledger server",
+      "description": "Your server's address, e.g. https://lit.example.com",
+      "default": "http://127.0.0.1:8765",
+      "required": true
+    }
+  },
   "mcpServers": "./.mcp.json"
 }

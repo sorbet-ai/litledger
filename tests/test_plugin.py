@@ -19,7 +19,9 @@ def test_marketplaces_point_at_the_plugin():
         data = json.loads((ROOT / manifest).read_text(encoding="utf-8"))
         assert data["name"] == "litledger"
     codex_manifest = json.loads((ROOT / "plugins/litledger/.codex-plugin/plugin.json").read_text(encoding="utf-8"))
-    assert codex_manifest["mcpServers"] == {}  # no server built in: Codex cannot expand ${LITLEDGER_URL}, so the address is the user's own config
+    assert codex_manifest["mcpServers"] == {}  # no server built in: Codex has no plugin options for the address, so it is the user's own config
     servers = json.loads((ROOT / "plugins/litledger/.mcp.json").read_text(encoding="utf-8"))["mcpServers"]
-    assert servers["litledger"]["url"].endswith("/mcp")
+    assert servers["litledger"]["url"] == "${user_config.server}/mcp"  # the address is a plugin option, set with --config
+    claude_manifest = json.loads((ROOT / "plugins/litledger/.claude-plugin/plugin.json").read_text(encoding="utf-8"))
+    assert claude_manifest["userConfig"]["server"]["default"] == "http://127.0.0.1:8765"
     assert "Authorization" not in servers["litledger"].get("headers", {})  # apps sign in with OAuth, never a pasted token

@@ -327,16 +327,17 @@ token; it signs in through the browser). The repo is
 its own marketplace (`.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`).
 
 - Claude Code: `claude plugin marketplace add sorbet-ai/litledger` (or a local clone),
-  `claude plugin install litledger@litledger`, then Authenticate under `/mcp`. The server is
-  `${LITLEDGER_URL:-http://127.0.0.1:8765}/mcp` with `X-Litledger-Workspace: ${PWD}`.
+  `claude plugin install litledger@litledger --config server=<url>`, then
+  `claude mcp login plugin:litledger:litledger`. The server address is the plugin option `server` (default
+  `http://127.0.0.1:8765`; change it under `/config`); the MCP server is `${user_config.server}/mcp` with
+  `X-Litledger-Workspace: ${PWD}`.
 - Codex: the server is the user's own config (`codex mcp add litledger --url <server>/mcp`, then
   `codex mcp login litledger`), because Codex doesn't expand environment variables in a plugin's server URL. The
   plugin (`codex plugin marketplace add sorbet-ai/litledger`, `codex plugin add litledger@litledger`) adds the skill.
 - **Pinning a repo to a project**: for Claude Code, commit a `.mcp.json` with `X-Litledger-Project` and hide the
   plugin's server with `deniedMcpServers: [{serverName: "plugin:litledger:litledger"}]` in `.claude/settings.json`;
   for Codex, `http_headers` in the repo's `.codex/config.toml`; for the CLI, `.litledger.toml` (`project = "…"`).
-- `litledger login --claude` runs `claude mcp add --transport http --scope user litledger <url>/mcp` and
-  `claude mcp login litledger`, so Claude Code holds an OAuth grant, never a token.
+- `litledger login --claude` runs those three commands, so Claude Code holds an OAuth grant, never a token.
 
 ## 15. Tests
 

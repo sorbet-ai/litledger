@@ -117,7 +117,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--local", action="store_true", help="inspect local config/DB instead of asking the server")
     s = sub.add_parser("login", help="sign this machine in: approve the code it shows in the web UI; the token is saved to ~/.litledger")
     s.add_argument("--name", default=None, help="name for this machine/agent (default: the host name)")
-    s.add_argument("--claude", action="store_true", help="also add the MCP server to Claude Code (user scope; it signs in "
+    s.add_argument("--claude", action="store_true", help="also install the Claude Code plugin for this server (it signs in "
                                                          "through the browser, no token is stored in Claude Code)")
     s.add_argument("--no-browser", action="store_true", help="don't open the approval page")
     sub.add_parser("logout", help="forget this machine's saved token (remove it under Settings → Connected apps)")
@@ -375,9 +375,11 @@ def _save(name: str, value: str) -> Path:
 
 
 def claude_commands(url: str) -> list[list[str]]:
-    """Add litledger to Claude Code (user scope) and sign it in through the browser (OAuth): no token in its config."""
-    return [["claude", "mcp", "add", "--transport", "http", "--scope", "user", "litledger", f"{url}/mcp"],
-            ["claude", "mcp", "login", "litledger"]]
+    """Install the Claude Code plugin pointed at `url` and sign it in through the browser (OAuth): no token in its
+    config. The same commands as Settings → Connected apps; each is safe to re-run."""
+    return [["claude", "plugin", "marketplace", "add", "sorbet-ai/litledger"],
+            ["claude", "plugin", "install", "litledger@litledger", "--config", f"server={url}"],
+            ["claude", "mcp", "login", "plugin:litledger:litledger"]]
 
 
 def _add_to_claude(url: str) -> None:
