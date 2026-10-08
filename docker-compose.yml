@@ -1,0 +1,26 @@
+services:
+  litledger:
+    build: .
+    image: litledger:latest
+    container_name: litledger
+    # All settings (API keys, sign-in methods, sources, backups) live in the web UI: http://127.0.0.1:8765/settings
+    ports:
+      # Localhost only. For your home network use "8765:8765" and set the public address under Admin → Server.
+      - "127.0.0.1:8765:8765"
+    # environment:
+      # Behind a reverse proxy (Caddy, nginx, Traefik), name it here so client addresses and https come through
+      # (X-Forwarded-For/-Proto): its address as the container sees it, e.g. the Docker network "172.16.0.0/12",
+      # or the bridge gateway "172.17.0.1" for a proxy on the host. Set PUBLIC_URL under Admin → Server too.
+      # LITLEDGER_TRUSTED_PROXIES: "172.16.0.0/12"
+    volumes:
+      # Named volume: SQLite + papers + settings. Don't bind-mount an NTFS/OneDrive folder for the database.
+      - litledger-data:/data
+      # Snapshots (database + files, daily by default) land here, outside the volume. Sync this folder anywhere.
+      # On Linux the server (uid 10001) must own it; once, before the first start:
+      #   mkdir -p backups && sudo chown 10001 backups
+      # Restore: docker compose stop litledger && docker compose run --rm --no-deps litledger litledger restore /backups/<file>
+      - ./backups:/backups
+    restart: unless-stopped
+
+volumes:
+  litledger-data:

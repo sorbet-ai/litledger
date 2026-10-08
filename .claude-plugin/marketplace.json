@@ -1,0 +1,13 @@
+{
+  "name": "litledger",
+  "owner": { "name": "Sorbet" },
+  "metadata": { "description": "litledger: a shared literature ledger for research agents" },
+  "plugins": [
+    {
+      "name": "litledger",
+      "source": "./plugins/litledger",
+      "description": "Find, capture, read, tag and cite papers in your self-hosted litledger. Adds the MCP server (signs in through your browser) and the litledger skill.",
+      "category": "research"
+    }
+  ]
+}

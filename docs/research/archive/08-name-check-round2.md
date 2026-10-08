@@ -1,0 +1,40 @@
+# Name collision check, round 2 (run 2026-10-06)
+
+Method: PyPI/npm/Docker registry status codes and GitHub/Docker search were run live (curl/urllib). WebSearch returned little of use (generic results), so the "product conflicts" column rests partly on GitHub/PyPI/npm descriptions seen in the live lookups and partly on background knowledge, flagged [bg]. Docker library image was 404 (free) for all 21 names. GitHub = top by stars from a name search.
+
+| name | PyPI | -mcp | npm | Docker (top hit) | GitHub notable | product conflicts | risk | free variants (PyPI+npm) |
+|---|---|---|---|---|---|---|---|---|
+| stemma | taken: "Stemma Python Client", 0.0.1, dead since 2021 | free | taken (unrelated, 2022) | dhuniwien/stemmaweb, stemmarest (textual-criticism tools, 2-3M pulls) | stemma-sh/stemma (21 stars, DOCX editing for agents); Adafruit STEMMA hardware | Stemma data-catalog startup [bg]; Adafruit STEMMA connector; Stemmaweb scholarly tools (same metaphor, different niche) | MEDIUM | stemma-lit; stemma-mcp. stemmata: PyPI taken |
+| commonplace | taken: PKM tool "for the augmented self", 0.0.4, uploaded 2025-11 (active) | free | taken (old Firefox Marketplace pkg) | commonplacewiki/commonplace (5k pulls) | fredoliveira/commonplace 168 (markdown server); zby/commonplace 91 (LLM wiki theory); bramses/commonplace-bot 60 (LLM commonplace book) | Several PKM/LLM-notes projects share the exact concept | HIGH | commonplace-lit, commonplacebook |
+| florilegium | free | free | free | none | anneheartrecord/florilegium 14 (local agent workflow); abap-florilegium 61 (ABAP list) | none found | LOW | n/a (florilegia: PyPI free, npm taken) |
+| warrant | taken: Cognito helper, last 2017 | free | taken (OAuth2 provider, 2022) | tiny | warrant-dev/warrant 1338 (authorization service); qwigo/warrant 473 | Warrant authz company (acquired by WorkOS [bg]); generic legal term | MEDIUM | warrant-lit |
+| winnow | taken: JSON-schema lib, last 2015 | free | taken (GeoJSON filters, 2022) | itsaryanchauhan/winnow, 8.7k pulls (RAG prompt compression) | winnow-rs 973 (Rust parser); GhalebDweikat/winnow 102 (context sieve for Claude Code) | Rust `winnow` crate well known; two agent-context tools | MEDIUM | winnow-lit. winnower: PyPI taken |
+| glean | taken: OpenStack config-drive tool, ACTIVE (1.25.1, 2025-06), ships a `glean` CLI | taken | taken (asset pipeline) | rubygem/glean etc. | open-glean 1579; facebookincubator/Glean 1423 (code indexing); LeslieLeung/glean 869 (self-hosted RSS + knowledge) | Glean, enterprise AI search/agents, $7B+ valuation (confirmed by search) | HIGH | glean-lit. gleaner taken on both |
+| assay | taken: placeholder "Future testing framework" 0.0, no files | free | taken (assertion fns, 2022) | veriguardai/assay-engine | mgattozzi/assay 126 (Rust test macro); awss1i/assay 102 | assay-engine (small); generic lab term | MEDIUM | assay-lit. assayer taken |
+| attest | taken: unit testing lib, dead since 2012 | free | taken (a11y testing) | rubygem/attest, attest/catnip | actions/attest-build-provenance 1050; VibeTensor/attestix 875 (attestation for AI agents) | Provenance/attestation tooling crowds search results | MEDIUM | attest-lit. attestor taken |
+| apostil | free | free | taken (Figma-like React commenting, modified 2026-09-30, active) | none direct | only Portuguese "apostila" course repos | npm "apostil" is an annotation/comment tool, mild adjacency | MEDIUM (npm only; PyPI/Docker clear) | apostil-lit. apostille: PyPI free, npm taken |
+| plexus | taken: "bio-inspired" 0.0.4, dead since 2017 | free | taken (service mgmt, 2022) | plexus/php-with-git-ftp | techlore/plexus 689 (Android compat) | Plexus Worldwide, Plexus Corp, Plexus cloud products [bg]; heavily used word | MEDIUM | plexus-lit |
+| skein | taken: YARN deploy tool, 0.8.2, last 2022 | free | taken (crypto) | swerebenchv2/jcrist-skein | jcrist/skein 144; rust-adventure/skein 323 (Bevy) | Skein hash function [bg]; unrelated | MEDIUM | skein-lit |
+| trellis | taken: event-driven lib, dead since 2008 | taken | taken: "Agentic State Engine" (2026-09-29, active) | trellisldp/trellis, 7k pulls | mindfold-ai/Trellis 14.9k ("best agent harness"); microsoft/TRELLIS 13.8k (3D gen); roots/trellis 2.6k | Crowded in AI agents; Microsoft TRELLIS model | HIGH | trellis-lit |
+| mneme | taken: note-taking format w/ web viewer, dead since 2014 | free | taken (2022) | thefilthycount/mneme, mnemelabs/core | slow-stack/mneme 139 (agent memory); zachallaun/mneme 140; MadAppGang/mnemex | Multiple agent-memory products named Mneme (Rust MCP server by Perseus Computing, nexor-mneme on PyPI) | HIGH | mnemo, mnemosyne: both taken on PyPI+npm |
+| spoor | taken: function-call tracker 0.6.0 (2023) | free | taken (CLI issue tracker) | none relevant | microsoft/spoor 52 (tracing); iimorning/spoor 14 (local-first notes canvas) | small; mild overlap with notes | MEDIUM | spoor-lit |
+| adduce | taken: ACTIVE "local research-artifact auditor: claims, code..." 0.2.0, 2026-08-31 | free | taken (2022 request tool) | dujunio/adduce | DeclanChidlow/Adduce 29 (static site gen) | PyPI package occupies the same research-claims niche | HIGH | adducer, adduce-lit |
+| dossier | taken: ACTIVE logging lib for AI agents, 1.2.0, 2026-04 | taken | taken (stats, 2022) | mendrixeu/dossier | reasoncorp/dossier 381 (Rails reports); rwliebs/Dossier 89 | Agent-tooling clash incl. MCP package; generic word | HIGH | dossier-lit |
+| concordance | taken: Turkish linguistics concordance tool, 2022 | free | taken: widely used JS dep (concordancejs, 211 stars) | mgibio/concordance (bioinformatics) | jaymzh/concordance 212 (Logitech Harmony CLI) | `concordance` CLI exists in Debian/Ubuntu repos [bg] | MEDIUM | concordancer: PyPI taken, npm free |
+| locus | taken: ACTIVE spatial data structures, v11.0.0 (2026-01) | taken | taken | davenautoguide/locus, acraterdevops/locus | locustio/locust 28k (near-homonym); r1n7aro/Locus 745 (Unity dev agent) | Locust confusion; Locus agent for Unity | MEDIUM | locus-lit |
+| tally | taken: Django app, dead since 2016 | taken | taken (template engine) | morveus/tally | davidfowl/tally 1164 (agents classify bank transactions); uber-go/tally 908 | Tally.so forms, Tally accounting software [bg]; `tally` command in some distros [bg] | MEDIUM | tally-lit |
+| vouch | taken: ACTIVE "Curated AI search for agents", 0.2.4, 2026-05 | taken | taken (schema validation) | vouch/ruby etc. | mitchellh/vouch 5.1k (trust mgmt); vouch/vouch-proxy 3.3k | Vouch AI products (diligence verification, recruiting) | HIGH | vouch-lit. voucher: PyPI free, npm taken |
+| cartulary | taken: ACTIVE "Foreign keys for your Markdown docs", 0.4.0, 2026-09 | free | taken: ACTIVE "Cartulary SDK for software agents" (agent payments), 2026-08 | none | daveajones/cartulary 176 (web archiver, self-hosted) | Two active agent/markdown-adjacent products already | MEDIUM (leaning HIGH) | cartularium, cartularies (free on both) |
+
+## Notes
+- CLI clash (background knowledge, not verified): `glean` already ships a CLI via the PyPI package; `concordance` and `tally` exist as packages/commands on some Linux distros; no clashes recalled for florilegium, stemma, apostil, adduce, cartulary.
+- Docker Hub library check is 404 for every name, so no official-image clash anywhere.
+- WebSearch gave almost no product signal, so statements marked [bg] are unverified and no trademark database was searched. Do a USPTO/EUIPO check before committing.
+- Variants were checked only on PyPI and npm; Docker/GitHub not checked for variants.
+- Many PyPI "taken" hits are dead (2008-2017) and could be reclaimed via PEP 541, but that is slow; prefer a free name.
+
+## Cleanest options
+1. florilegium: free on PyPI, npm, Docker; only a 14-star repo nearby. Fits "anthology of sourced quotes".
+2. apostil: PyPI, -mcp and Docker clear; npm taken by a small commenting tool.
+3. cartularium (cartulary variant): free everywhere checked, though cartulary itself is crowded.
+4. stemma-lit / stemma-mcp, if the stemma metaphor is preferred.

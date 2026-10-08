@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "litledger": {
+      "type": "http",
+      "url": "${LITLEDGER_URL:-http://127.0.0.1:8765}/mcp",
+      "headers": {
+        "X-Litledger-Workspace": "${PWD:-}"
+      }
+    }
+  }
+}

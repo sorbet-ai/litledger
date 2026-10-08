@@ -1,0 +1,37 @@
+{
+  "name": "litledger",
+  "version": "0.1.0",
+  "homepage": "https://github.com/sorbet-ai/litledger",
+  "repository": "https://github.com/sorbet-ai/litledger",
+  "description": "The litledger skill: how to find, capture, read, tag and cite papers with your litledger server.",
+  "author": {
+    "name": "Sorbet"
+  },
+  "keywords": [
+    "research",
+    "papers",
+    "bibliography",
+    "citations",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "litledger",
+    "shortDescription": "Your shared literature ledger",
+    "longDescription": "Teaches Codex the litledger habits. Connect your own litledger server separately: codex mcp add litledger --url <your server>/mcp, then codex mcp login litledger.",
+    "developerName": "Sorbet",
+    "category": "Research",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Find papers on gated linear attention in my library",
+      "Capture arXiv 2412.06464 for this project"
+    ],
+    "brandColor": "#2342C4",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/icon.svg"
+  },
+  "mcpServers": {}
+}
