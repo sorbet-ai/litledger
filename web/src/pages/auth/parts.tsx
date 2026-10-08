@@ -1,6 +1,7 @@
 // What the sign-in, invite and reset pages share: the card, the Google/GitHub buttons, form fields and errors.
 import { InputHTMLAttributes, ReactNode, useId } from "react";
 import type { AuthMethods } from "../../lib/api";
+import { Brand } from "../../ui/Brand";
 
 export const errText = (e: unknown) => String(e instanceof Error ? e.message : e).replace(/^Error: /, "");
 
@@ -8,7 +9,7 @@ export function Card({ children }: { children: ReactNode }) {
   return (
     <div className="signin">
       <div className="signin-card">
-        <div className="brand"><span className="brand-mark" />litledger</div>
+        <Brand />
         {children}
       </div>
     </div>

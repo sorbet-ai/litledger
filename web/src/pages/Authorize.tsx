@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { api, OAuthRequest } from "../lib/api";
+import { Brand } from "../ui/Brand";
 
 /** The consent page an app (Claude Code, Codex, …) sends the browser to when it connects. */
 export default function Authorize({ projects }: { projects: { id: string; works: number }[] }) {
@@ -24,7 +25,7 @@ export default function Authorize({ projects }: { projects: { id: string; works:
   return (
     <div className="signin">
       <div className="signin-card">
-        <div className="brand"><span className="brand-mark" />litledger</div>
+        <Brand />
         {err ? (
           <div className="stack" style={{ gap: 8 }}><h1>Can't continue</h1><p className="small muted" style={{ margin: 0 }}>{err}</p></div>
         ) : !req ? (

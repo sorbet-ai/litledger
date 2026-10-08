@@ -128,8 +128,10 @@ label.field, div.field { display: flex; flex-direction: column; gap: 4px; font-s
 .shell { display: grid; grid-template-columns: 216px minmax(0, 1fr); height: 100%; }
 .rail { display: flex; flex-direction: column; gap: 14px; padding: 14px 10px; border-right: 1px solid var(--line); background: var(--surface-2); min-height: 0; }
 .brand { display: flex; align-items: center; gap: 9px; padding: 2px 6px 6px; font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
-.brand-mark { width: 24px; height: 24px; border-radius: 6px; background: var(--pen); position: relative; overflow: hidden; flex: none; }
-.brand-mark::after { content: ""; position: absolute; left: 5px; right: 5px; top: 11px; height: 6px; background: var(--marker); transform: skewX(-12deg); }
+.brand-logo { height: 26px; width: auto; display: block; }
+.dark-only { display: none; }
+:root[data-theme="dark"] .dark-only { display: block; }
+:root[data-theme="dark"] .light-only { display: none; }
 .search-trigger {
   display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: var(--r-sm); border: 1px solid var(--line);
   background: var(--surface); color: var(--muted); cursor: pointer; width: 100%; text-align: left;

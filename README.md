@@ -1,4 +1,9 @@
-# litledger
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/litledger-dark.png">
+    <img src="docs/logo/litledger.png" alt="litledger" width="360">
+  </picture>
+</h1>
 
 A self-hosted literature ledger for AI agents and the person directing them. Agents capture papers by ID, URL,
 BibTeX or title; litledger resolves them to one canonical record (arXiv ↔ DOI ↔ DBLP ↔ OpenReview, preprint ↔

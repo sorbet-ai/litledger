@@ -16,6 +16,7 @@ import { Icon } from "../ui/Icon";
 import { OverlayProvider, useOverlays } from "../ui/overlays";
 import { Action, Picked, PickerProvider, usePicker } from "../ui/pickers";
 import { AppCtx, Ctx } from "./context";
+import { Brand } from "../ui/Brand";
 
 // The graph and map canvas carry big libraries; load them when first opened.
 const GraphPage = lazy(() => import("../pages/Graph"));
@@ -28,7 +29,7 @@ function Shell({ ctx, warnings, projects }: { ctx: Ctx; warnings: Warning[]; pro
   return (
     <div className="shell">
       <aside className="rail">
-        <div className="brand"><span className="brand-mark" />litledger</div>
+        <Brand />
         <button className="search-trigger" onClick={palette}><Icon name="search" />Search<kbd>Ctrl K</kbd></button>
         <div className="proj stack" style={{ gap: 4 }}>
           <span className="tiny muted" style={{ paddingLeft: 4 }}>Project</span>
