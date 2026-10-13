@@ -486,3 +486,7 @@ dl.fields dd { margin: 0; }
 .steps li { display: flex; gap: 14px; }
 .steps .yr { flex: none; width: 40px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 1px; }
 @media (max-width: 760px) { .readings, .checkpoints { margin-left: 0; } .reading { flex-wrap: wrap; } .reading-side { flex-direction: row; align-items: center; } }
+
+/* maths from papers' text: the size of the words around it, a wide display formula scrolls instead of overflowing */
+.tex .katex { font-size: 1.05em; }
+.tex-display { display: block; overflow-x: auto; overflow-y: hidden; margin: 4px 0; }

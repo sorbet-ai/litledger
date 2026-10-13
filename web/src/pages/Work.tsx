@@ -9,6 +9,7 @@ import { Icon } from "../ui/Icon";
 import { useOverlays } from "../ui/overlays";
 import { KindLabel, TagChip } from "../ui/pickers";
 import { AgentBrief, useWorkMenu } from "../works/workMenu";
+import { selectedSource, Tex } from "../ui/Tex";
 
 type FullText = Awaited<ReturnType<typeof api.passages>>;
 
@@ -17,7 +18,7 @@ function useQuoteNote(work: string, after: () => void) {
   return useCallback(async (quote: string) => {
     const r = await form({
       title: "Quote in a note", submit: "Save note",
-      body: <blockquote className="serif" style={{ margin: 0, paddingLeft: 12, borderLeft: "3px solid var(--marker)", fontSize: 15 }}>{quote}</blockquote>,
+      body: <blockquote className="serif" style={{ margin: 0, paddingLeft: 12, borderLeft: "3px solid var(--marker)", fontSize: 15 }}><Tex text={quote} /></blockquote>,
       fields: [{ name: "text", label: "Your note (optional)", type: "textarea", placeholder: "Why this matters…" },
                { name: "kind", label: "Kind", type: "select", value: "quote", options: NOTE_KINDS.map((k) => ({ value: k, label: k })) }],
     });
@@ -46,7 +47,7 @@ function Reader({ work, onChange }: { work: WorkDetail; onChange: () => void }) 
   useEffect(() => {
     const onUp = () => {
       const s = window.getSelection();
-      const text = s?.toString().trim() ?? "";
+      const text = selectedSource(s).trim();
       if (text.length > 12 && box.current && s?.anchorNode && box.current.contains(s.anchorNode)) {
         const r = s.getRangeAt(0).getBoundingClientRect();
         setSel({ text, x: r.left + r.width / 2, y: r.top });
@@ -85,7 +86,7 @@ function Reader({ work, onChange }: { work: WorkDetail; onChange: () => void }) 
               {head}
               <div className={"passage" + (p.note ? " noted" : "")}
                 onContextMenu={(e) => {
-                  const chosen = window.getSelection()?.toString().trim();
+                  const chosen = selectedSource(window.getSelection()).trim();
                   menu(e, [
                     ...(chosen ? [{ label: "Quote selection in a note…", icon: "quote", onClick: () => quoteNote(chosen) }] : []),
                     { label: "Quote this passage in a note…", icon: "quote", onClick: () => quoteNote(p.text.slice(0, 600)) },
@@ -94,7 +95,7 @@ function Reader({ work, onChange }: { work: WorkDetail; onChange: () => void }) 
                   ]);
                 }}>
                 <span className="pno">p{p.seq}</span>
-                <span className="body">{p.text}</span>
+                <span className="body"><Tex text={p.text} /></span>
               </div>
             </div>
           );
@@ -158,7 +159,7 @@ export default function WorkPage() {
             })}
             {(w.flags ?? []).map((f) => <span key={f} className="badge" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>{f}</span>)}
           </div>
-          {typeof csl.abstract === "string" && <p className="abstract" style={{ marginTop: 18 }}>{csl.abstract}</p>}
+          {typeof csl.abstract === "string" && <p className="abstract" style={{ marginTop: 18 }}><Tex text={csl.abstract} /></p>}
           <div className="tabs">
             {[["notes", "Notes", w.counts.notes], ["text", "Full text", 0], ["knowledge", "Knowledge", knowledge.length], ["links", "Links", w.counts.links],
               ["cited", "Cited by", w.counts.cited_by_local], ["history", "History", 0]].map(([k, label, n]) => (
@@ -190,8 +191,8 @@ export default function WorkPage() {
                     {n.verification === "verified" && <span className="badge verified">quote verified</span>}
                     <span className="muted">{n.by ?? ""}</span><span className="muted">{n.created_at.slice(0, 10)}</span>
                   </div>
-                  {n.text && n.text !== n.quote && <div style={{ marginTop: 6 }}>{n.text}</div>}
-                  {n.quote && <blockquote>{n.quote}</blockquote>}
+                  {n.text && n.text !== n.quote && <div style={{ marginTop: 6 }}><Tex text={n.text} /></div>}
+                  {n.quote && <blockquote><Tex text={n.quote} /></blockquote>}
                 </div>
               ))}
               {!w.notes?.length && <p className="muted">No notes in this project yet.</p>}
@@ -239,7 +240,7 @@ export default function WorkPage() {
           {tab === "cited" && (
             <div className="stack">
               {(w.cited_by ?? []).map((c, i) => (
-                <div key={i} className="note"><Link to={`/work/${encodeURIComponent(c.citekey)}`} className="key">{c.citekey}</Link><blockquote>{c.sentence}</blockquote></div>
+                <div key={i} className="note"><Link to={`/work/${encodeURIComponent(c.citekey)}`} className="key">{c.citekey}</Link><blockquote><Tex text={c.sentence} /></blockquote></div>
               ))}
               {!w.cited_by?.length && <p className="muted">No papers in your library cite this one yet.</p>}
             </div>
