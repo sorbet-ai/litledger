@@ -24,4 +24,6 @@ def test_marketplaces_point_at_the_plugin():
     assert servers["litledger"]["url"] == "${user_config.server}/mcp"  # the address is a plugin option, set with --config
     claude_manifest = json.loads((ROOT / "plugins/litledger/.claude-plugin/plugin.json").read_text(encoding="utf-8"))
     assert claude_manifest["userConfig"]["server"]["default"] == "http://127.0.0.1:8765"
-    assert "Authorization" not in servers["litledger"].get("headers", {})  # apps sign in with OAuth, never a pasted token
+    # no headers at all: no pasted token (apps sign in with OAuth), and nothing per folder, because Claude Code keys a
+    # sign-in by the server's config, so a header like ${PWD} would mean one sign-in per folder
+    assert "headers" not in servers["litledger"] and "headersHelper" not in servers["litledger"]

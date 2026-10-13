@@ -2,10 +2,7 @@
   "mcpServers": {
     "litledger": {
       "type": "http",
-      "url": "${user_config.server}/mcp",
-      "headers": {
-        "X-Litledger-Workspace": "${PWD:-}"
-      }
+      "url": "${user_config.server}/mcp"
     }
   }
 }

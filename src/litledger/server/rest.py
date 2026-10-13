@@ -3,9 +3,7 @@ every route shares: who is acting, in which project, and how errors map to HTTP.
 from __future__ import annotations
 
 import json
-import re
 import sqlite3
-import time
 
 import anyio
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
@@ -34,33 +32,12 @@ def actor_from(request: Request | None) -> Actor:
     if request is not None:
         h = request.headers
         project = h.get("x-litledger-project") or request.query_params.get("project") or ""
-        if not project and h.get("x-litledger-workspace"):
-            guess = _workspace_project(request, h["x-litledger-workspace"]) or ""
-            project = guess if guess and src.may_use(guess) else ""
         if not project:
             project = src.projects[0] if src.projects else "default"
         a.project = project_slug(project)
         a.agent = h.get("x-litledger-agent") or None
         a.session = h.get("mcp-session-id") or h.get("x-litledger-session") or src.session
     return a
-
-
-def _workspace_project(request: Request, workspace: str) -> str | None:
-    """A client's working folder (e.g. D:/code/thesis) names its project when a project with that name exists. The
-    project list is cached for 30 seconds on the app (one cache per server, never shared between ledgers)."""
-    name = re.split(r"[\\/]", workspace.rstrip("\\/"))[-1] if workspace.strip() else ""
-    slug = project_slug(name) if name else ""
-    if not slug:
-        return None
-    state = request.app.state
-    lg = getattr(state, "ledger", None)
-    if lg is None:
-        return None
-    cache = getattr(state, "project_ids", None)
-    if cache is None or time.time() - cache[0] > 30:
-        with lg.db.read() as conn:
-            cache = state.project_ids = (time.time(), frozenset(r["id"] for r in conn.execute("SELECT id FROM projects")))
-    return slug if slug in cache[1] else None
 
 
 def require_admin(request: Request) -> Actor:

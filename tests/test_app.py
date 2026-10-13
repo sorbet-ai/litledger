@@ -194,19 +194,6 @@ def test_add_and_remove_sources(client):
     assert fields["ENABLE"]["value"] == "inspire"
 
 
-def test_workspace_folder_picks_an_existing_project(client):
-    client.post("/api/v1/tools/tag", json={"action": "list"}, headers={"X-Litledger-Project": "thesis"})
-    with client.lg.db.tx(auth.Actor(name="t"), internal="test setup") as tx:
-        tx.execute("INSERT OR IGNORE INTO projects(id,title,created_at) VALUES('thesis','thesis','2026-01-01')")
-    client.app.state.project_ids = None  # forget the cached project list
-    me = client.get("/api/v1/me", headers={"X-Litledger-Project": "", "X-Litledger-Workspace": r"D:\code\thesis"}).json()
-    assert me["project"] == "thesis"
-    me = client.get("/api/v1/me", headers={"X-Litledger-Project": "", "X-Litledger-Workspace": "/home/me/elsewhere"}).json()
-    assert me["project"] == "default"
-    me = client.get("/api/v1/me", headers={"X-Litledger-Project": "web", "X-Litledger-Workspace": "/x/thesis"}).json()
-    assert me["project"] == "web"  # an explicit project wins
-
-
 # ------------------------------------------------------------------------------------------------ review fixes
 def test_unknown_tools_and_bad_projects_answer_in_text(client):
     """POST /tools/{name} and MCP answer one line with a way out, never a 500."""

@@ -40,8 +40,8 @@ litledger snapshot                                 # litledger/ folder to commit
 ```
 
 Project comes from `.litledger.toml` (`project = "name"`), `--project`, or `LITLEDGER_PROJECT`. Over MCP it comes from
-the client's config (the repo's `.mcp.json` header), else the repo folder's name when such a project exists; outputs
-show `project=…`. Pass `project=` on a call only when that is wrong.
+the client's config (the repo's `.mcp.json` header), else the account's default; outputs show `project=…`. When that
+isn't this repo's project, pass `project=` on each call.
 
 ## Extra toolsets (ask the user to enable via the X-Litledger-Tools header when needed)
 

@@ -32,13 +32,6 @@ def test_project_argument_cannot_leave_the_limit(env):
     assert "project=thesis" in c.post("/api/v1/tools/find", json={}, headers={**h, "Accept": "text/plain"}).text
 
 
-def test_workspace_header_cannot_leave_the_limit(env):
-    lg, c, h = env
-    c.app.state.project_ids = None  # forget the cached project list
-    me = c.get("/api/v1/me", headers={**h, "X-Litledger-Workspace": "/code/secret"}).json()
-    assert me["project"] == "thesis"
-
-
 def test_limited_principals_see_only_their_journal_and_no_jobs(env):
     lg, c, h = env
     c.post("/api/v1/tools/tag", json={"action": "list"}, headers=h)

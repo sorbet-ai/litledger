@@ -81,9 +81,9 @@ codex mcp login litledger
 The Codex plugin carries only the litledger skill (Codex can't take the server address from the environment, so the
 plugin doesn't guess one): `codex plugin marketplace add sorbet-ai/litledger` and `codex plugin add litledger@litledger`.
 
-**Which project.** A repo pins its project with a header in its own config; the folder name is used otherwise when a
-project of that name exists (terminals that set `PWD`), else `default`. For Claude Code, commit a `.mcp.json` and
-hide the plugin's copy of the server in that repo so tools aren't listed twice:
+**Which project.** Agents use your default project unless a repo pins one with a header in its own config, or the
+agent passes `project=` on a call. For Claude Code, commit a `.mcp.json` and hide the plugin's copy of the server in
+that repo so tools aren't listed twice (the repo's server signs in once on its own):
 
 ```json
 // .mcp.json

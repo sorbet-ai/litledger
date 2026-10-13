@@ -186,7 +186,7 @@ Clients pick toolsets with `X-Litledger-Tools: core,graph` (or `all`), else the 
 are not callable over MCP. The `admin` toolset is upkeep of the library (status and cost stats, fixing a work's
 project state or a wrong merge), not a permission: any signed-in agent may call them, and permissions are checked on
 every call as usual (`TOOLS=admin` and `X-Litledger-Tools: admin` keep working, so it isn't renamed). No tool schema
-declares `project`: the project comes from `X-Litledger-Project` (or the workspace, §11), and `tools.call` takes a
+declares `project`: the project comes from `X-Litledger-Project`, and `tools.call` takes a
 `project` and an `agent` label out of any call's arguments before the tool sees them (a project the caller may not
 use is an error). An unknown tool, or a `project` that isn't text, is a one-line `error:` naming the fix. Resources: `litledger://status`,
 `litledger://project` (counts, tags, recent captures, maps), `litledger://map/{id}`. Prompt: `extract_paper`. The init
@@ -266,8 +266,8 @@ a link.
   Access tokens last an hour and are bound to `/mcp` (refused on REST); refresh tokens rotate, last 90 days, and a
   reused one revokes its family. Each (person, app) pair is one agent principal, e.g. `claude-code-<person>`;
   disabling a person pauses their apps and removing them revokes them.
-- **Project**: `X-Litledger-Project` or `?project=`, else the folder named in `X-Litledger-Workspace` when such a
-  project exists, else the principal's first allowed project, else `default`. Projects are created on first write.
+- **Project**: `X-Litledger-Project` or `?project=` (or an MCP tool's `project`), else the principal's first allowed
+  project, else `default`. Projects are created on first write.
 - **Project limits**: a limited principal gets 403 for another project in the header or query, and an error for one
   named in an MCP tool's `project`. Library-wide data follows one rule (`Actor.check_library_change`): a limited
   principal may read and add library items but not delete, retract, merge, split, rename or archive shared ones, and
@@ -329,8 +329,8 @@ its own marketplace (`.claude-plugin/marketplace.json`, `.agents/plugins/marketp
 - Claude Code: `claude plugin marketplace add sorbet-ai/litledger` (or a local clone),
   `claude plugin install litledger@litledger --config server=<url>`, then
   `claude mcp login plugin:litledger:litledger`. The server address is the plugin option `server` (default
-  `http://127.0.0.1:8765`; change it under `/config`); the MCP server is `${user_config.server}/mcp` with
-  `X-Litledger-Workspace: ${PWD}`.
+  `http://127.0.0.1:8765`; change it under `/config`); the MCP server is `${user_config.server}/mcp`, with no
+  headers: Claude Code keys a sign-in by the server's config, so a per-folder header would mean one sign-in per folder.
 - Codex: the server is the user's own config (`codex mcp add litledger --url <server>/mcp`, then
   `codex mcp login litledger`), because Codex doesn't expand environment variables in a plugin's server URL. The
   plugin (`codex plugin marketplace add sorbet-ai/litledger`, `codex plugin add litledger@litledger`) adds the skill.
