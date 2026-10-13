@@ -14,6 +14,7 @@ import sqlite3
 from .db import Actor, Tx, now
 from .knowledge import add_links
 from .ledger import Ledger
+from .library import add_notes
 from .textutil import clip, title_slug
 from .works import add_to_project, ensure_project, require_work
 
@@ -137,7 +138,9 @@ def edit(lg: Ledger, actor: Actor, project: str, ref: str | None, ops: list[dict
       stage{title, goal?, checkpoints?, key?}          stage_update{id, title?, goal?, checkpoints?}
       read{stage, work, why, focus?, depth?, minutes?, concepts?, key?}   read_update{id, why?, focus?, …, stage?}
       move{id, stage?, before?}                         remove{id}
-      lineage{work, builds_on, relation, change, evidence?}   (work: the newer one; evidence: a note id)"""
+      lineage{work, builds_on, relation, change, quote?, page?, evidence?}
+        work is the newer one; quote is the sentence from it that states the step (it becomes a verified note, the
+        step's evidence); or evidence names an existing note"""
     added, problems, lineage = [], [], []
     with lg.db.tx(actor) as tx:
         if ref:
@@ -218,7 +221,8 @@ def edit(lg: Ledger, actor: Actor, project: str, ref: str | None, ops: list[dict
                     if rel not in LINEAGE:
                         raise ValueError(f"relation must be one of {', '.join(LINEAGE)}")
                     lineage.append({"source": op.get("work"), "target": op.get("builds_on"), "relation": rel,
-                                    "qualifier": clip(str(op.get("change") or ""), 300) or None, "evidence": op.get("evidence"), "i": i})
+                                    "qualifier": clip(str(op.get("change") or ""), 300) or None, "evidence": op.get("evidence"),
+                                    "quote": op.get("quote"), "page": op.get("page"), "i": i})
                     continue
                 done += 1
             except (LookupError, ValueError, PermissionError) as exc:
@@ -226,7 +230,21 @@ def edit(lg: Ledger, actor: Actor, project: str, ref: str | None, ops: list[dict
         tx.execute("UPDATE curricula SET updated_at=? WHERE id=?", (now(), cid))
         tx.log("curriculum.edit", {"curriculum": cid, "ops": done, **({"meta": sorted(meta)} if meta else {})}, project=project)
     if lineage:  # ordinary links (their own transaction): the newer work → the older one it builds on
-        res = add_links(lg, actor, project, [{k: v for k, v in item.items() if k != "i" and v is not None} for item in lineage])
+        quoted = [item for item in lineage if item.get("quote") and not item.get("evidence")]
+        if quoted:  # the quote becomes a note on the newer work (checked against its text), and that note the evidence
+            notes = add_notes(lg, actor, project, [{"work": item["source"], "text": item["qualifier"] or item["quote"],
+                                                    "quote": item["quote"], **({"page": item["page"]} if item.get("page") else {})}
+                                                   for item in quoted])
+            for item, n in zip(quoted, notes):
+                if n["status"] == "ok":
+                    item["evidence"] = n["id"]
+                    if n.get("verification") != "verified":
+                        problems.append(f"op {item['i']} (lineage): the quote wasn't found in {item['source']}'s stored text; "
+                                        "kept as unverified evidence")
+                else:
+                    problems.append(f"op {item['i']} (lineage): quote not recorded: {n.get('message') or n['status']}")
+        res = add_links(lg, actor, project, [{k: v for k, v in item.items() if k not in ("i", "quote", "page") and v is not None}
+                                             for item in lineage])
         for item, r in zip(lineage, res):
             if r["status"] == "ok":
                 done += 1

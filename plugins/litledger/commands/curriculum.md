@@ -25,11 +25,10 @@ abstracts is not a curriculum. Total reading time for the learner: 8 to 20 hours
    on. For each paper settle: what it adds to the idea, what a reader must know first, and what changed from its
    predecessors. Don't read whole papers when sections will do, and never paste long text into notes.
 4. Record the lineage as you go: how each work relates to the earlier one it builds on.
-   - Anchor the claim in the paper's own words: `note items=[{"work": "<newer>", "text": "…", "quote": "<verbatim
-     sentence, e.g. 'we extend DeltaNet by…'>"}]`. The reply gives the note's id, and litledger checks the quote
-     against the stored text.
-   - Then `curriculum ops=[{"op": "lineage", "work": "<newer>", "builds_on": "<older>", "relation": "…",
-     "change": "one line: what changed", "evidence": "<note id>"}]`.
+   - `curriculum ops=[{"op": "lineage", "work": "<newer>", "builds_on": "<older>", "relation": "…",
+     "change": "one line: what changed", "quote": "<the newer paper's own sentence that says so, verbatim, e.g.
+     'we extend DeltaNet by…'>"}]`. litledger checks the quote against the stored text and keeps it as the step's
+     evidence; the reply says when a quote wasn't found.
    - relation is one of: extends, generalizes, simplifies, fixes, reinterprets, outperforms, contradicts, compares_to, instance_of, motivates.
    - Only claim what the papers support. A step you can't anchor in a quote gets no evidence and is reported as such.
 5. Design the course, 4 to 6 stages in order. Typically:

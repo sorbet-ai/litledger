@@ -74,6 +74,28 @@ def test_lineage_is_an_evidenced_link(lg, actor):
     assert "yang2024gated -extends/adds a gate" in call(lg, actor, "graph", work="yang2024gated", kind="evidence")
 
 
+def test_lineage_takes_a_quote_or_the_short_note_id(lg, actor):
+    build(lg, actor)
+    out = call(lg, actor, "curriculum", curriculum="cur:delta-rule", ops=[
+        {"op": "lineage", "work": "yang2024gated", "builds_on": "katharopoulos2020transformers", "relation": "extends",
+         "change": "adds a gate", "quote": "We combine gating with the delta rule."}])
+    assert "applied 1" in out and "kept as unverified evidence" in out, out  # no stored text here to check it against
+    [step] = curricula.get(lg, actor.project, "cur:delta-rule")["lineage"]
+    assert "gating with the delta rule" in step["evidence"]
+    # the 10-character id the note tool prints is enough to name a note as evidence
+    call(lg, actor, "note", items=[{"work": "katharopoulos2020transformers", "text": "Linear attention is an RNN."}])
+    with lg.db.read() as conn:
+        full = conn.execute("SELECT id FROM notes WHERE text LIKE 'Linear attention is%'").fetchone()["id"]
+    out = call(lg, actor, "curriculum", curriculum="cur:delta-rule", ops=[
+        {"op": "lineage", "work": "katharopoulos2020transformers", "builds_on": "yang2024gated", "relation": "compares_to",
+         "change": "x", "evidence": full[:10]}])
+    assert "applied 1" in out and not "problem" in out.lower(), out
+    out = call(lg, actor, "curriculum", curriculum="cur:delta-rule", ops=[
+        {"op": "lineage", "work": "katharopoulos2020transformers", "builds_on": "yang2024gated", "relation": "motivates",
+         "change": "x", "evidence": "n:zzzz"}])
+    assert "evidence note n:zzzz not found" in out, out
+
+
 def test_move_update_and_remove(lg, actor):
     build(lg, actor)
     out = call(lg, actor, "curriculum", curriculum="cur:delta-rule", ops=[

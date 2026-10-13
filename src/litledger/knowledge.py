@@ -559,9 +559,13 @@ def add_links(lg: Ledger, actor: Actor, project: str, items: list[dict]) -> list
                 results.append({"status": "no_match", "message": str(exc)})
                 continue
             evidence = item.get("evidence")
-            if evidence and not tx.execute("SELECT 1 FROM notes WHERE id=? AND project=?", (evidence, project)).fetchone():
-                results.append({"status": "error", "message": f"evidence note {evidence} not found"})
-                continue
+            if evidence:  # a note id, or the short form the note tool prints when it names one note
+                rows = tx.execute("SELECT id FROM notes WHERE (id=? OR id LIKE ?) AND project=? LIMIT 2",
+                                  (evidence, str(evidence).replace("%", "").replace("_", "") + "%", project)).fetchall()
+                if len(rows) != 1:
+                    results.append({"status": "error", "message": f"evidence note {evidence} " + ("is ambiguous" if rows else "not found")})
+                    continue
+                evidence = rows[0]["id"]
             scope = link_scope(tx.conn, project, src, dst, evidence)
             lid = link_id(scope, src, dst, rel, item.get("qualifier"))
             existing = tx.execute("SELECT * FROM links WHERE id=?", (lid,)).fetchone()
