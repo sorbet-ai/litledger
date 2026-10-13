@@ -16,7 +16,7 @@ cytoscape.use(fcose);
 cytoscape.use(layoutUtilities);
 
 // How far a paper has been read shows as a ring; its fill and size show how connected it is.
-const READ: Record<string, string> = { full: "#2b7a4b", sections: "#4f9a6a", skimmed: "#d08a1e", abstract: "#c9a64a", metadata: "#b9b2a0" };
+const READ: Record<string, string> = { full: "#2d7a55", sections: "#5a9e78", skimmed: "#d9952a", abstract: "#d8b850", metadata: "#c9bc98" };
 
 type LayoutName = "force" | "spacious" | "columns";
 const LAYOUTS: Record<LayoutName, string> = { force: "Force", spacious: "Force, spacious", columns: "Columns by kind" };
@@ -227,7 +227,9 @@ export default function GraphPage() {
 
       // size grows almost in step with links, and the fill stays pale until a paper is really well connected, so a
       // paper with 60 links stands out from one with 15 and the weakly connected recede
-      const pen = css("--pen"), faint = mix(css("--surface"), css("--line-strong"), 0.9), ink = css("--ink");
+      const pen = css("--pen"), mid = css("--pen-mid"), faint = mix(css("--surface"), css("--line-strong"), 0.9), ink = css("--ink");
+      // pale → pastel mint → the logo's deep green (a straight blend goes muddy through the middle)
+      const tint = (t: number) => (t < 0.5 ? mix(faint, mid, t * 2) : mix(mid, pen, (t - 0.5) * 2));
       const weight = (d: number) => Math.pow(d / top, 0.85);
       const shade = (d: number) => Math.pow(d / top, 1.4);
       const saved = store.get<Record<string, cytoscape.Position>>(posKey, {});
@@ -235,7 +237,7 @@ export default function GraphPage() {
         ...net.nodes.map((n) => {
           const d = degree[n.id] ?? 0, w = weight(d);
           return { data: { id: n.id, label: n.citekey, shown: "", title: n.title, kind: "work", read: n.read ?? "", deg: d, w,
-                           size: 7 + 50 * w, fill: d ? mix(faint, pen, 0.12 + 0.88 * shade(d)) : faint, fsize: 11 + 5 * w,
+                           size: 7 + 50 * w, fill: d ? tint(0.12 + 0.88 * shade(d)) : faint, fsize: 11 + 5 * w,
                            citedBy: citedBy[n.id] ?? 0, cites: cites[n.id] ?? 0, key: n.citekey, tags: n.tags },
                    position: saved[n.id] };
         }),
@@ -269,7 +271,7 @@ export default function GraphPage() {
         container: box.current, elements, wheelSensitivity: 0.25, maxZoom: 3, minZoom: 0.08,
         layout: { name: "preset", fit: true, padding: 40 },
         style: [
-          { selector: "node", style: { label: "data(shown)", "font-family": "Instrument Sans, sans-serif", "font-size": (n: cytoscape.NodeSingular) => n.data("fs") ?? n.data("fsize"), color: ink,
+          { selector: "node", style: { label: "data(shown)", "font-family": "Nunito Variable, Nunito, sans-serif", "font-size": (n: cytoscape.NodeSingular) => n.data("fs") ?? n.data("fsize"), color: ink,
             "font-weight": 600, "text-valign": ((n: cytoscape.NodeSingular) => n.data("valign") ?? "bottom") as unknown as "bottom",
             "text-halign": ((n: cytoscape.NodeSingular) => n.data("halign") ?? "center") as unknown as "center", "text-margin-y": 0, "text-wrap": "ellipsis", "text-max-width": "400px",
             "text-background-color": surface, "text-background-opacity": 0.85, "text-background-padding": "2px", "text-background-shape": "roundrectangle",

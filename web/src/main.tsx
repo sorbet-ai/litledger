@@ -1,7 +1,5 @@
-import "@fontsource/instrument-sans/400.css";
-import "@fontsource/instrument-sans/500.css";
-import "@fontsource/instrument-sans/600.css";
-import "@fontsource/instrument-sans/700.css";
+import "@fontsource-variable/nunito/wght.css";
+import "@fontsource-variable/nunito/wght-italic.css";
 import "@fontsource-variable/newsreader/opsz.css";
 import "@fontsource-variable/newsreader/opsz-italic.css";
 import React from "react";

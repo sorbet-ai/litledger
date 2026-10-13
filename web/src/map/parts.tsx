@@ -16,8 +16,8 @@ export const COLORS: { key: string; label: string }[] = [
   { key: "green", label: "Green" }, { key: "red", label: "Red" }, { key: "grey", label: "Grey" },
 ];
 export const MARKS = ["⭐", "❓", "✅", "⚠️", "💡", "🔥", "📌", "🧪"];
-export const BRANCH = ["#2342c4", "#0f7b6c", "#a6581b", "#8a4c9b", "#a8386a", "#3c6fa6", "#2b7a4b", "#6b56b8"];
-export const BRANCH_DARK = ["#8ea3ff", "#4fc7b3", "#e5a066", "#d39be3", "#ee8fb8", "#86b4e8", "#7bcf99", "#b4a3f2"];
+export const BRANCH = ["#0d6b57", "#c8383d", "#8a5a34", "#b9651f", "#2a8577", "#a84e78", "#7458a3", "#2d7a55"];
+export const BRANCH_DARK = ["#8edcbf", "#ff8d84", "#d9a77c", "#f0a868", "#6fcfbf", "#eba0c4", "#c0a8ec", "#86d3a6"];
 
 type Ctx = {
   editing: string | null;
