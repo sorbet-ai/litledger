@@ -3,7 +3,8 @@
 import { Background, BackgroundVariant, ConnectionMode, Controls, MiniMap, ReactFlow, ReactFlowProvider, useReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { api } from "../lib/api";
 import { cssVar as css } from "../lib/format";
 import { THINKING } from "../lib/kinds";
 import { Icon } from "../ui/Icon";
@@ -34,7 +35,8 @@ export default function MapEditor() {
 
 function Editor() {
   const id = decodeURIComponent(useParams().id ?? "");
-  const { ask, show, toast } = useOverlays();
+  const { ask, show, toast, menu, confirm } = useOverlays();
+  const nav = useNavigate();
   const rf = useReactFlow();
   const [editing, setEditing] = useState<string | null>(null);
   const sync = useMapSync(id, editing);
@@ -70,6 +72,17 @@ function Editor() {
         <button className="btn sm icon" title="Redo (Ctrl Y)" aria-label="Redo (Ctrl Y)" onClick={sync.redo}><Icon name="redo" /></button>
         <button className="btn sm" title="Tidy layout" onClick={cmd.tidyEverything}><Icon name="layout" />Tidy</button>
         <MenuButton className="btn sm" label="Export" icon="download" items={() => exportMap(id, rf, sync.flush, show)} />
+        <button className="btn sm icon" aria-label="More" title="More" onClick={(e) => menu(e, [
+          { label: "Rename…", onClick: async () => {
+            const t = await ask("Rename map", { label: "Title", value: title, required: true }, "Rename");
+            if (t) await sync.rename(t).catch((err) => toast(String(err), true));
+          } },
+          { sep: true },
+          { label: "Delete map", icon: "trash", danger: true, onClick: async () => {
+            if (!(await confirm(`Delete “${title}”?`, <p className="muted" style={{ margin: 0 }}>The papers and items in it are not affected.</p>, "Delete", true))) return;
+            try { await api.deleteMap(id); toast(`Deleted “${title}”`); nav("/maps"); } catch (err) { toast(String(err), true); }
+          } },
+        ])}><Icon name="more" /></button>
         <button className="btn sm ghost" onClick={() => show("Map shortcuts", (
           <table className="list small"><tbody>
             {SHORTCUTS.map(([k, v]) => <tr key={k}><td><kbd>{k}</kbd></td><td>{v}</td></tr>)}
