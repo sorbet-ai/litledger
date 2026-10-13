@@ -211,13 +211,14 @@ function Lineage({ c }: { c: Curriculum }) {
     const used: Record<string, number> = {};
     const pos = (w: string) => {
       const n = (used[cell(w)] = (used[cell(w)] ?? -1) + 1);
-      return { x: col(c.works[w].year ?? 0), y: (laneTop[stageOf[w] ?? 0] ?? 0) + n * ROW };
+      // zigzag within a crowded year, so an arrow between two works in it doesn't run through the ones between
+      return { x: col(c.works[w].year ?? 0) + (n % 2) * 56, y: (laneTop[stageOf[w] ?? 0] ?? 0) + n * ROW };
     };
     const short = (t: string) => { const head = t.split(/[:—(]/)[0].trim(); return head.length > 26 ? head.slice(0, 25) + "…" : head; };
     const lineagePairs = new Set(c.lineage.map((e) => `${e.builds_on}>${e.work}`));
     const ink = css("--ink"), pen = css("--pen"), line = css("--line-strong"), surface = css("--surface"), muted = css("--muted");
     const cy = cytoscape({
-      container: box.current, wheelSensitivity: 0.25, minZoom: 0.2, maxZoom: 2.5,
+      container: box.current, userZoomingEnabled: false, userPanningEnabled: false, boxSelectionEnabled: false, autoungrabify: true,
       elements: [
         ...years.map((y) => ({ data: { id: `year${y}`, label: y ? String(y) : "?", year: 1 }, position: { x: col(y), y: -50 }, selectable: false, grabbable: false })),
         ...c.stages.map((st, i) => ({ data: { id: `lane${i}`, label: `${i + 1}  ${short(st.title)}`, year: 1, lane: 1 },
@@ -234,30 +235,37 @@ function Lineage({ c }: { c: Curriculum }) {
         { selector: "node[year = 1]", style: { "background-opacity": 0, "font-size": 13, color: muted, "text-valign": "center", width: 1, height: 1, events: "no" } },
         { selector: "node[lane = 1]", style: { "text-halign": "left", "font-size": 12, "text-background-opacity": 0 } },
         { selector: "edge", style: { "curve-style": "bezier", width: 1.6, "line-color": pen, "target-arrow-color": pen, "target-arrow-shape": "triangle",
-          label: "data(label)", "font-size": 10, color: ink, "text-rotation": "autorotate", "text-background-color": surface, "text-background-opacity": 0.9,
-          "text-background-padding": "2px" } },
+          "font-size": 11, "font-weight": 600, color: ink, "text-rotation": "autorotate", "text-background-color": surface, "text-background-opacity": 0.95,
+          "text-background-padding": "2px", opacity: 0.55 } },
+        // a step's words show when you point at it or at either of its works
+        { selector: "edge.hl", style: { label: "data(label)", width: 2.6, opacity: 1, "z-index": 10 } },
+        { selector: "node.hl", style: { "border-width": 3, "border-color": surface, "z-index": 11 } },
         { selector: "edge[cite = 1]", style: { "line-style": "dashed", "line-color": line, "target-arrow-color": line, width: 0.8, label: "", opacity: 0.6 } },
         { selector: ":selected", style: { "overlay-color": pen, "overlay-opacity": 0.15 } },
       ],
     });
-    // readable rather than squeezed: zoom no lower than 0.75 (pan sideways for the rest), the box as tall as the graph
-    const PAD = 40, el = box.current;
+    // readable rather than squeezed: zoom no lower than 0.8, and the box as big as the graph (it scrolls sideways when wider)
+    const PAD = 36, el = box.current, room = el.parentElement?.clientWidth ?? el.clientWidth;
     const bb = cy.elements().boundingBox({});
-    const z = Math.min(1, Math.max(0.75, (el.clientWidth - 2 * PAD) / bb.w));
-    el.style.height = `${Math.round(Math.min(Math.max(bb.h * z + 2 * PAD, 260), 1100))}px`;
+    const z = Math.min(1, Math.max(0.8, (room - 2 * PAD) / bb.w));
+    el.style.width = `${Math.max(room, Math.ceil(bb.w * z + 2 * PAD))}px`;
+    el.style.height = `${Math.ceil(bb.h * z + 2 * PAD)}px`;
     cy.resize();
     cy.zoom(z);
     cy.pan({ x: PAD - bb.x1 * z, y: PAD - bb.y1 * z });
     cy.on("tap", "edge[step = 1]", (e) => setPicked({ step: c.lineage.find((s) => s.id === e.target.id()) }));
     cy.on("tap", "node[^year]", (e) => setPicked({ work: e.target.id() }));
     cy.on("tap", (e) => { if (e.target === cy) setPicked(null); });
+    cy.on("mouseover", "edge[step = 1]", (e) => e.target.addClass("hl").connectedNodes().addClass("hl"));
+    cy.on("mouseover", "node[^year]", (e) => e.target.addClass("hl").connectedEdges("[step = 1]").addClass("hl"));
+    cy.on("mouseout", "edge, node", () => cy.elements(".hl").removeClass("hl"));
     return () => cy.destroy();
   }, [c, stageOf]);
 
   const key = (w: string) => c.works[w]?.citekey ?? w;
   return (
     <div className="lineage">
-      <div className="lineage-graph" ref={box} />
+      <div className="lineage-scroll"><div className="lineage-graph" ref={box} /></div>
       {picked?.step && (
         <div className="panel pad picked">
           <b>{key(picked.step.work)}</b> {RELATION_WORD[picked.step.relation] ?? picked.step.relation} <b>{key(picked.step.builds_on)}</b>
