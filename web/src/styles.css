@@ -373,6 +373,24 @@ dl.fields dd { margin: 0; }
 .ktoggle.off { color: var(--muted); background: transparent; border-style: dashed; }
 .ktoggle.off .sw { background: transparent; box-shadow: inset 0 0 0 1.5px var(--kc); }
 .graph-legend { flex-wrap: wrap; gap: 10px; padding: 6px 10px; max-width: calc(100% - 24px); }
+.graph-legend .dot.ring { background: transparent; box-shadow: inset 0 0 0 2px var(--c); }
+.graph-legend .dot.big { width: 12px; height: 12px; }
+.minlinks { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.minlinks b { color: var(--ink); font-variant-numeric: tabular-nums; min-width: 1.4em; text-align: right; }
+.minlinks input { width: 110px; accent-color: var(--pen); }
+.btn.on { border-color: var(--pen); color: var(--pen); }
+/* the ranked list beside the graph: the most connected papers, each with a bar for its share of the top count */
+.hubs { position: absolute; top: 0; right: 0; bottom: 0; width: 300px; background: var(--surface); border-left: 1px solid var(--line);
+        display: flex; flex-direction: column; z-index: 6; }
+.hubs-head { padding: 12px 14px 8px; display: grid; gap: 1px; border-bottom: 1px solid var(--line); }
+.hubs ol { list-style: none; margin: 0; padding: 4px 0 60px; overflow: auto; }
+.hubs li { position: relative; display: grid; grid-template-columns: 1fr auto; column-gap: 8px; padding: 7px 14px; cursor: pointer; }
+.hubs li:hover, .hubs li.on { background: var(--hover, rgba(35, 66, 196, .06)); }
+.hubs li .bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--pen); opacity: .07; pointer-events: none; }
+.hubs li .k { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hubs li .n { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--pen); }
+.hubs li .t { grid-column: 1 / -1; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hubs li .d { grid-column: 1 / -1; font-size: 11.5px; }
 .sepv { width: 1px; align-self: stretch; background: var(--line); }
 
 /* settings */
