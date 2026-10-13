@@ -11,6 +11,13 @@ def test_plugin_skill_matches_bundled_skill():
     assert plugin == bundled, "run: cp src/litledger/skill/SKILL.md plugins/litledger/skills/litledger/SKILL.md"
 
 
+def test_plugin_curriculum_command_matches_the_brief():
+    from litledger.prompts import curriculum_command
+    plugin = (ROOT / "plugins/litledger/commands/curriculum.md").read_text(encoding="utf-8")
+    assert plugin == curriculum_command(), "regenerate plugins/litledger/commands/curriculum.md from prompts.curriculum_command()"
+    assert "$ARGUMENTS" in plugin and "curriculum:<idea-slug>" in plugin
+
+
 def test_marketplaces_point_at_the_plugin():
     claude = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
     codex = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text(encoding="utf-8"))

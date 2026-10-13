@@ -9,7 +9,7 @@ import anyio
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 
-from .. import __version__, backup, knowledge, library, maps, search, tools
+from .. import __version__, backup, curricula, knowledge, library, maps, search, tools
 from .. import tags as tagmod
 from ..args import project_slug, tag_expr, year_range
 from ..auth import Denied
@@ -286,10 +286,45 @@ def register_rest(app: FastAPI, lg: Ledger) -> None:
                 "relations": [{"name": r.name, "meaning": r.meaning} for r in knowledge.RELATIONS.values()]}
 
     @app.get("/api/v1/briefs/{name}")
-    async def brief(name: str, work: str = "", focus: str = ""):
+    async def brief(name: str, request: Request):
+        """A brief's text; its arguments come as query parameters (the CLI sends its first one as `subject`)."""
         if name not in BRIEFS:
             raise HTTPException(404, "unknown brief")
-        return PlainTextResponse(BRIEFS[name][0](work, focus))
+        fn, _, args = BRIEFS[name]
+        params = dict(request.query_params)
+        if "subject" in params:
+            params.setdefault(args[0], params.pop("subject"))
+        if not params.get(args[0]):
+            raise HTTPException(400, f"{name} needs {args[0]}")
+        return PlainTextResponse(fn(**{k: v for k, v in params.items() if k in args and v}))
+
+    @app.get("/api/v1/curricula")
+    async def curricula_list(request: Request):
+        a = actor_from(request)
+        return await run(curricula.list_curricula, lg, a.project)
+
+    @app.get("/api/v1/curricula/{cid:path}/markdown")
+    async def curriculum_markdown(cid: str, request: Request):
+        a = actor_from(request)
+        text = await guard(lambda: curricula.markdown(curricula.get(lg, a.project, cid)))
+        return PlainTextResponse(text, media_type="text/markdown; charset=utf-8")
+
+    @app.get("/api/v1/curricula/{cid:path}")
+    async def curriculum_get(cid: str, request: Request):
+        a = actor_from(request)
+        return await guard(lambda: curricula.get(lg, a.project, cid))
+
+    @app.delete("/api/v1/curricula/{cid:path}")
+    async def curriculum_delete(cid: str, request: Request):
+        a = actor_from(request)
+        return await guard(lambda: {"deleted": curricula.delete(lg, a, a.project, cid)})
+
+    @app.post("/api/v1/curricula")
+    async def curriculum_edit(request: Request):
+        a = actor_from(request)
+        body = await read_body(request)
+        return await guard(lambda: curricula.edit(lg, a, a.project, body.get("curriculum"), body.get("ops") or [], body.get("title"),
+                                                  body.get("idea"), body.get("audience"), body.get("intro")))
 
     @app.get("/api/v1/maps")
     async def maps_list(request: Request):

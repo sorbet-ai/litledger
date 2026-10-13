@@ -439,3 +439,49 @@ dl.fields dd { margin: 0; }
 .list.audit tr.failure td:first-child { box-shadow: inset 3px 0 0 var(--danger); }
 .list.audit tr.security td:first-child { box-shadow: inset 3px 0 0 var(--marker); }
 .list.audit tr.failure td { background: color-mix(in srgb, var(--danger-soft) 45%, transparent); }
+
+/* -- curricula: a syllabus (numbered stages of reading cards) and the idea's lineage ----------------------------- */
+.curriculum { max-width: 980px; }
+.curriculum .crumbs a { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); text-decoration: none; }
+.curriculum .lede { font-size: 15.5px; line-height: 1.55; max-width: 72ch; margin: -4px 0 8px; }
+.clamp2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 80ch; }
+.cur-stats { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; color: var(--muted); font-size: 13px; }
+.cur-stats .progress { display: inline-flex; gap: 8px; align-items: center; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.cur-stats .bar { width: 120px; height: 6px; border-radius: 3px; background: var(--surface-3); overflow: hidden; display: inline-block; }
+.cur-stats .bar span { display: block; height: 100%; background: var(--pen); }
+.cur-intro { margin-top: 14px; padding: 12px 16px; border-left: 3px solid var(--pen); background: var(--surface-2); border-radius: 0 var(--r-md) var(--r-md) 0;
+             line-height: 1.6; max-width: 80ch; white-space: pre-line; }
+.stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 26px; }
+.stage-head { display: flex; gap: 12px; align-items: flex-start; }
+.stage-head h2 { margin: 2px 0 2px; font-size: 18px; }
+.stage-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--surface); display: grid; place-items: center;
+           font-weight: 700; font-size: 13px; margin-top: 1px; }
+.readings { list-style: none; margin: 12px 0 0 40px; padding: 0; display: grid; gap: 8px; }
+.reading { display: flex; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.reading.done { background: var(--surface-2); }
+.reading.done .reading-title a { color: var(--muted); }
+.reading-n { flex: none; width: 30px; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; padding-top: 2px; }
+.reading-title { font-weight: 600; font-size: 14.5px; }
+.reading-title a { color: var(--ink); text-decoration: none; }
+.reading-title a:hover { text-decoration: underline; }
+.reading .why { margin: 6px 0 0; line-height: 1.5; max-width: 72ch; }
+.reading .focus { margin-top: 5px; font-size: 13px; color: var(--ink-2); }
+.reading .focus b { font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-right: 4px; }
+.reading .concepts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.reading .chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--k-concept) 12%, transparent);
+                 color: var(--k-concept); }
+.reading-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.depth { font-size: 11.5px; font-weight: 600; text-transform: capitalize; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line-strong); }
+.depth.d-study { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.depth.d-skim { color: var(--muted); border-style: dashed; }
+.btn.ok { color: var(--ok, #2b7a4b); border-color: currentColor; }
+.checkpoints { margin: 12px 0 0 40px; padding: 10px 14px; border: 1px dashed var(--line-strong); border-radius: var(--r-md); font-size: 13.5px; }
+.checkpoints ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.lineage { display: grid; gap: 14px; }
+.lineage-graph { height: 460px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
+.lineage .picked p { margin: 6px 0; }
+.lineage blockquote { margin: 6px 0 0; padding: 4px 10px; border-left: 3px solid var(--line-strong); color: var(--ink-2); font-size: 13px; font-style: italic; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.steps li { display: flex; gap: 14px; }
+.steps .yr { flex: none; width: 40px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 1px; }
+@media (max-width: 760px) { .readings, .checkpoints { margin-left: 0; } .reading { flex-wrap: wrap; } .reading-side { flex-direction: row; align-items: center; } }

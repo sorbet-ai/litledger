@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 # How the schema changed after v1, applied in order by Database._migrate (in one transaction, after a backup):
 # columns added (fresh databases get them from this list too, so SCHEMA only holds a table's original columns),
@@ -255,6 +255,13 @@ CREATE TABLE IF NOT EXISTS map_edges(id TEXT PRIMARY KEY, map_id TEXT NOT NULL R
   deleted_at TEXT);
 CREATE TABLE IF NOT EXISTS map_layout(map_id TEXT NOT NULL, node_id TEXT NOT NULL, x REAL, y REAL,
   style TEXT NOT NULL DEFAULT '{}', PRIMARY KEY(map_id, node_id));
+-- curricula: stages and readings (a stage's goal and checkpoints, a reading's why/focus/depth/minutes/concepts in body)
+CREATE TABLE IF NOT EXISTS curricula(id TEXT PRIMARY KEY, project TEXT NOT NULL, title TEXT NOT NULL,
+  idea TEXT NOT NULL DEFAULT '', audience TEXT NOT NULL DEFAULT '', intro TEXT NOT NULL DEFAULT '', created_by TEXT,
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL, deleted_at TEXT);
+CREATE TABLE IF NOT EXISTS curriculum_parts(curriculum_id TEXT NOT NULL REFERENCES curricula(id), id TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('stage', 'reading')), stage TEXT, seq REAL NOT NULL, title TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL DEFAULT '{}', work_id TEXT, created_by TEXT, created_at TEXT NOT NULL, PRIMARY KEY(curriculum_id, id));
 
 CREATE TABLE IF NOT EXISTS call_stats(tool TEXT PRIMARY KEY, calls INTEGER NOT NULL DEFAULT 0,
   chars_out INTEGER NOT NULL DEFAULT 0, max_chars_out INTEGER NOT NULL DEFAULT 0);

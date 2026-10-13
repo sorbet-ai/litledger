@@ -12,7 +12,8 @@ PREFIX = "LITLEDGER_"
 
 # MCP toolsets (the TOOLS setting and the X-Litledger-Tools header choose among them).
 TOOLSETS = {"core": ["find", "discover", "resolve", "work", "read", "note", "tag", "export"],
-            "graph": ["graph", "snowball", "entity", "link"], "maps": ["map_get", "map_edit"], "check": ["check"],
+            "graph": ["graph", "snowball", "entity", "link"], "maps": ["map_get", "map_edit"], "learn": ["curriculum"],
+            "check": ["check"],
             "admin": ["status", "update_work"]}
 
 

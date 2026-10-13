@@ -209,10 +209,13 @@ def parser() -> argparse.ArgumentParser:
     s = sub.add_parser("config", help="show settings, or set them: litledger config set S2_API_KEY=... (same as Admin → Sources)")
     s.add_argument("action", nargs="?", choices=["show", "set", "clear", "test"], default="show")
     s.add_argument("items", nargs="*", help="KEY=VALUE for set; KEY for clear; source id for test")
-    s = sub.add_parser("brief", help="print a ready-made task for a subagent, e.g.: litledger brief extract_paper yang2024gated")
+    s = sub.add_parser("brief", help="print a ready-made task for a subagent, e.g.: litledger brief extract_paper yang2024gated, "
+                                     "litledger brief build_curriculum \"delta rule\" --hours 12")
     s.add_argument("name")
-    s.add_argument("work")
+    s.add_argument("subject", help="the work (extract_paper) or the idea (build_curriculum)")
     s.add_argument("--focus", default="")
+    s.add_argument("--audience", default="")
+    s.add_argument("--hours", default="")
     sub.add_parser("status")
     s = sub.add_parser("tool", help="call any tool with JSON arguments")
     s.add_argument("name")
@@ -336,7 +339,8 @@ def _config(a) -> None:
 
 def _brief(a) -> None:
     c = _client(a)
-    print(c._check(c.http.get(f"/api/v1/briefs/{a.name}", params={"work": a.work, "focus": a.focus})).text)
+    params = {"subject": a.subject, "focus": a.focus, "audience": a.audience, "hours": a.hours}
+    print(c._check(c.http.get(f"/api/v1/briefs/{a.name}", params={k: v for k, v in params.items() if v})).text)
 
 
 def _status(a) -> None:

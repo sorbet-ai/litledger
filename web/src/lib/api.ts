@@ -3,6 +3,15 @@
 
 import { session } from "./storage";
 
+export type CurriculumSummary = { id: string; title: string; idea: string; audience: string; stages: number; readings: number;
+  minutes: number; updated_at: string; created_by: string | null };
+export type CWork = { id: string; citekey: string; title: string; year: number | null; authors: string; venue: string; read: string };
+export type CReading = { id: string; why?: string; focus?: string; depth?: "skim" | "read" | "study"; minutes?: number; concepts?: string[]; work: CWork | null };
+export type CStage = { id: string; title: string; goal?: string; checkpoints?: string[]; readings: CReading[] };
+export type CStep = { id: string; work: string; builds_on: string; relation: string; change: string; evidence: string; agent: string };
+export type Curriculum = { id: string; title: string; idea: string; audience: string; intro: string; created_by: string | null;
+  updated_at: string; stages: CStage[]; lineage: CStep[]; cites: { from: string; to: string }[]; works: Record<string, CWork> };
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -169,6 +178,12 @@ export const api = {
   results: (p: { benchmark?: string; metric?: string; method?: string }) => req<{ rows: ResultRow[] }>("/api/v1/results" + qs(p)),
   kinds: () => req<{ kinds: KindInfo[]; relations: { name: string; meaning: string }[] }>("/api/v1/kinds"),
   brief: (name: string, work: string, focus = "") => req<string>(`/api/v1/briefs/${name}` + qs({ work, focus })),
+  curricula: () => req<CurriculumSummary[]>("/api/v1/curricula"),
+  curriculum: (id: string) => req<Curriculum>(`/api/v1/curricula/${encodeURIComponent(id)}`),
+  curriculumMarkdown: (id: string) => req<string>(`/api/v1/curricula/${encodeURIComponent(id)}/markdown`),
+  editCurriculum: (body: { curriculum?: string; title?: string; idea?: string; audience?: string; intro?: string; ops: Record<string, unknown>[] }) =>
+    req<{ curriculum: string; added: string[]; changed: number; problems: string[] }>("/api/v1/curricula", { method: "POST", body: JSON.stringify(body) }),
+  deleteCurriculum: (id: string) => req<{ deleted: boolean }>(`/api/v1/curricula/${encodeURIComponent(id)}`, { method: "DELETE" }),
   maps: () => req<{ id: string; title: string; updated_at: string; nodes: number; version?: number }[]>("/api/v1/maps"),
   deleteMap: (id: string) => req<{ deleted: boolean }>(`/api/v1/maps/${encodeURIComponent(id)}`, { method: "DELETE" }),
   map: (id: string) => req<MapData>(`/api/v1/maps/${encodeURIComponent(id)}`),

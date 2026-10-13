@@ -12,6 +12,7 @@ from . import __version__
 from . import check as checkmod
 from . import discover as discmod
 from . import citations, formats, knowledge, library, portable, search
+from . import curricula as curriculamod
 from . import maps as mapsmod
 from . import snowball as snow
 from . import tags as tagmod
@@ -515,6 +516,23 @@ def t_map_edit(lg, actor, a):
     return "\n".join(out)
 
 
+def t_curriculum(lg, actor, a):
+    action = a.get("action") or ("edit" if a.get("ops") or a.get("title") else "get")
+    if action == "list" or (action == "get" and not a.get("curriculum")):
+        items = curriculamod.list_curricula(lg, actor.project)
+        return "\n".join([f"{len(items)} curricula"] + [f"{c['id']} · {c['title']} · {c['stages']} stages, {c['readings']} readings"
+                                                       for c in items])
+    if action == "get":
+        return curriculamod.outline(curriculamod.get(lg, actor.project, a["curriculum"]))
+    if action == "delete":
+        curriculamod.delete(lg, actor, actor.project, a.get("curriculum") or "")
+        return f"deleted {a.get('curriculum')}"
+    res = curriculamod.edit(lg, actor, actor.project, a.get("curriculum"), as_list(a.get("ops")), a.get("title"),
+                            a.get("idea"), a.get("audience"), a.get("intro"))
+    out = [f"ok {res['curriculum']}" + (f" · added {' '.join(res['added'])}" if res["added"] else "") + f" · applied {res['changed']}"]
+    return "\n".join(out + res["problems"])
+
+
 def t_check(lg, actor, a):
     kind = a.get("kind")
     if kind == "quotes":
@@ -645,6 +663,11 @@ TOOLS: dict[str, Tool] = {t.name: t for t in [
          obj({"map": S, "format": {"enum": ["outline", "mermaid", "canvas", "opml"]}}), t_map_get),
     Tool("map_edit", "Create/edit a mind map: ops add{text|ref,parent,key} update delete edge{src,dst,label} move promote; or outline (markdown bullets).",
          obj({"map": S, "title": S, "ops": {"type": "array"}, "outline": S, "agent": S}), t_map_edit, True, destructive=True),
+    Tool("curriculum", "Reading curricula: stages of readings (why, focus, depth, minutes) and the idea's lineage. "
+                       "ops: stage{title,goal,checkpoints,key} read{stage,work,why,focus,depth,minutes,concepts} "
+                       "lineage{work,builds_on,relation,change,evidence} stage_update/read_update{id,…} move{id,stage,before} remove{id}.",
+         obj({"action": {"enum": ["list", "get", "edit", "delete"]}, "curriculum": S, "title": S, "idea": S, "audience": S,
+              "intro": S, "ops": {"type": "array"}, "agent": S}), t_curriculum, True, destructive=True),
     Tool("check", "Verify quotes against stored text, references or a .bib against sources, or \\cite coverage of .tex.",
          obj({"kind": {"enum": ["quotes", "refs", "bib", "tex"]}, "items": {"type": "array", "description": "quotes: {work, quote}; refs: strings"},
               "content": S, "bib": S}, ["kind"]), t_check),

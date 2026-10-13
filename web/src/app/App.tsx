@@ -10,6 +10,7 @@ import Authorize from "../pages/Authorize";
 import Knowledge from "../pages/Knowledge";
 import Library from "../pages/Library";
 import MapsPage from "../pages/Maps";
+import CurriculaPage from "../pages/Curricula";
 import SettingsPage from "../pages/settings/Settings";
 import WorkPage from "../pages/Work";
 import { Icon } from "../ui/Icon";
@@ -21,6 +22,7 @@ import { Brand } from "../ui/Brand";
 // The graph and map canvas carry big libraries; load them when first opened.
 const GraphPage = lazy(() => import("../pages/Graph"));
 const MapEditor = lazy(() => import("../map/MapEditor"));
+const CurriculumPage = lazy(() => import("../pages/Curriculum"));
 
 function Shell({ ctx, warnings, projects }: { ctx: Ctx; warnings: Warning[]; projects: { id: string; works: number }[] }) {
   const { palette } = usePicker();
@@ -48,6 +50,7 @@ function Shell({ ctx, warnings, projects }: { ctx: Ctx; warnings: Warning[]; pro
           <NavLink to="/" end><Icon name="library" />Library</NavLink>
           <NavLink to="/knowledge"><Icon name="knowledge" />Knowledge</NavLink>
           <NavLink to="/maps"><Icon name="map" />Mind maps</NavLink>
+          <NavLink to="/curricula"><Icon name="course" />Curricula</NavLink>
           <NavLink to="/graph"><Icon name="graph" />Graph</NavLink>
           <NavLink to="/activity"><Icon name="activity" />Activity</NavLink>
           <div className="sep" />
@@ -71,6 +74,8 @@ function Shell({ ctx, warnings, projects }: { ctx: Ctx; warnings: Warning[]; pro
           <Route path="/knowledge" element={<Knowledge />} />
           <Route path="/graph" element={<Suspense fallback={null}><GraphPage /></Suspense>} />
           <Route path="/maps" element={<MapsPage />} />
+          <Route path="/curricula" element={<CurriculaPage />} />
+          <Route path="/curricula/:id" element={<Suspense fallback={null}><CurriculumPage /></Suspense>} />
           <Route path="/maps/:id" element={<Suspense fallback={null}><MapEditor /></Suspense>} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/settings" element={<SettingsPage />} />
