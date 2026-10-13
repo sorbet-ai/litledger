@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 
 # How the schema changed after v1, applied in order by Database._migrate (in one transaction, after a backup):
 # columns added (fresh databases get them from this list too, so SCHEMA only holds a table's original columns),
@@ -262,6 +262,9 @@ CREATE TABLE IF NOT EXISTS curricula(id TEXT PRIMARY KEY, project TEXT NOT NULL,
 CREATE TABLE IF NOT EXISTS curriculum_parts(curriculum_id TEXT NOT NULL REFERENCES curricula(id), id TEXT NOT NULL,
   kind TEXT NOT NULL CHECK (kind IN ('stage', 'reading')), stage TEXT, seq REAL NOT NULL, title TEXT NOT NULL DEFAULT '',
   body TEXT NOT NULL DEFAULT '{}', work_id TEXT, created_by TEXT, created_at TEXT NOT NULL, PRIMARY KEY(curriculum_id, id));
+-- each learner's own progress through a curriculum (the project's read levels also move when agents read)
+CREATE TABLE IF NOT EXISTS curriculum_progress(curriculum_id TEXT NOT NULL REFERENCES curricula(id), reading_id TEXT NOT NULL,
+  principal_id TEXT NOT NULL, done_at TEXT NOT NULL, PRIMARY KEY(curriculum_id, reading_id, principal_id));
 
 CREATE TABLE IF NOT EXISTS call_stats(tool TEXT PRIMARY KEY, calls INTEGER NOT NULL DEFAULT 0,
   chars_out INTEGER NOT NULL DEFAULT 0, max_chars_out INTEGER NOT NULL DEFAULT 0);

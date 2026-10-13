@@ -63,6 +63,7 @@ JOURNALED = {
     ("DELETE", "/api/v1/maps/{map_id:path}"): "map deletion",
     ("POST", "/api/v1/curricula"): "curriculum edits",
     ("DELETE", "/api/v1/curricula/{cid:path}"): "curriculum deletion",
+    ("POST", "/api/v1/curricula/{cid:path}/progress"): "a learner's progress",
     ("POST", "/api/v1/uploads"): "imports and attached files",
     ("POST", "/mcp"): "MCP tools journal what they change",
 }
@@ -205,10 +206,15 @@ def test_each_route_writes_its_declared_audit_op_or_journal_entry(srv, monkeypat
     hit("POST", "/api/v1/tools/{name}", lambda: c.post("/api/v1/tools/tag", json={"action": "define", "tags": ["x"]}, headers=h))
     made = hit("POST", "/api/v1/maps", lambda: c.post("/api/v1/maps", json={"title": "m", "ops": [{"op": "add", "text": "a"}]}, headers=h)).json()
     hit("DELETE", "/api/v1/maps/{map_id:path}", lambda: c.delete(f"/api/v1/maps/{made['map']}", headers=h))
-    cur = hit("POST", "/api/v1/curricula", lambda: c.post("/api/v1/curricula", json={"title": "c", "ops": [{"op": "stage", "title": "s"}]}, headers=h)).json()
-    hit("DELETE", "/api/v1/curricula/{cid:path}", lambda: c.delete(f"/api/v1/curricula/{cur['curriculum']}", headers=h))
     bib = b"@article{a, title={Attention Is All You Need}, author={Vaswani, Ashish}, year={2017}, eprint={1706.03762}, archivePrefix={arXiv}}\n"
     hit("POST", "/api/v1/uploads", lambda: c.post("/api/v1/uploads", files={"file": ("refs.bib", bib)}, headers=h))
+    with lg.db.read() as conn:
+        work = conn.execute("SELECT work_id FROM project_works WHERE project='p1'").fetchone()["work_id"]
+    cur = hit("POST", "/api/v1/curricula", lambda: c.post("/api/v1/curricula", json={"title": "c", "ops": [
+        {"op": "stage", "title": "s"}, {"op": "read", "stage": "s1", "work": work, "why": "w"}]}, headers=h)).json()
+    hit("POST", "/api/v1/curricula/{cid:path}/progress",
+        lambda: c.post(f"/api/v1/curricula/{cur['curriculum']}/progress", json={"reading": "r1", "done": True}, headers=h))
+    hit("DELETE", "/api/v1/curricula/{cid:path}", lambda: c.delete(f"/api/v1/curricula/{cur['curriculum']}", headers=h))
     mcp = {"Accept": "application/json, text/event-stream", "Content-Type": "application/json", **h}
     hit("POST", "/mcp", lambda: c.post("/mcp", headers=mcp, json={"jsonrpc": "2.0", "id": 1, "method": "tools/call",
                                                                   "params": {"name": "tag", "arguments": {"action": "define", "tags": ["y"]}}}))

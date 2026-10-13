@@ -312,7 +312,13 @@ def register_rest(app: FastAPI, lg: Ledger) -> None:
     @app.get("/api/v1/curricula/{cid:path}")
     async def curriculum_get(cid: str, request: Request):
         a = actor_from(request)
-        return await guard(lambda: curricula.get(lg, a.project, cid))
+        return await guard(lambda: curricula.get(lg, a.project, cid, learner=a.principal_id or a.name))
+
+    @app.post("/api/v1/curricula/{cid:path}/progress")
+    async def curriculum_progress(cid: str, request: Request):
+        a = actor_from(request)
+        body = await read_body(request)
+        return await guard(lambda: {"done": curricula.progress(lg, a, a.project, cid, str(body.get("reading") or ""), bool(body.get("done")))})
 
     @app.delete("/api/v1/curricula/{cid:path}")
     async def curriculum_delete(cid: str, request: Request):

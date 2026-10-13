@@ -14,7 +14,7 @@ import sqlite3
 from .db import Actor, Tx, now
 from .knowledge import add_links
 from .ledger import Ledger
-from .library import add_notes
+from .library import add_notes, bump_read
 from .textutil import clip, title_slug
 from .works import add_to_project, ensure_project, require_work
 
@@ -23,6 +23,8 @@ DEPTHS = ("skim", "read", "study")
 LINEAGE = ("extends", "generalizes", "simplifies", "fixes", "reinterprets", "outperforms", "contradicts", "compares_to",
            "instance_of", "motivates")
 OPS = ("stage", "stage_update", "read", "read_update", "move", "remove", "lineage")
+# finishing a reading at a depth means the work was read at least this far
+READ_FOR = {"skim": "skimmed", "read": "sections", "study": "full"}
 
 
 def _cur(conn: sqlite3.Connection, project: str, ref: str) -> sqlite3.Row:
@@ -57,6 +59,7 @@ def create(tx: Tx, project: str, title: str, idea: str = "", audience: str = "",
     n = 1
     while (row := tx.execute("SELECT deleted_at FROM curricula WHERE id=?", (cid,)).fetchone()):
         if row["deleted_at"]:  # a deleted curriculum's id is free again (the journal keeps the record)
+            tx.execute("DELETE FROM curriculum_progress WHERE curriculum_id=?", (cid,))
             tx.execute("DELETE FROM curriculum_parts WHERE curriculum_id=?", (cid,))
             tx.execute("DELETE FROM curricula WHERE id=?", (cid,))
             break
@@ -216,6 +219,7 @@ def edit(lg: Ledger, actor: Actor, project: str, ref: str | None, ops: list[dict
                                                               (cid, part["id"])).fetchone():
                         raise ValueError(f"stage {part['id']} still has readings: move or remove them first")
                     tx.execute("DELETE FROM curriculum_parts WHERE curriculum_id=? AND id=?", (cid, part["id"]))
+                    tx.execute("DELETE FROM curriculum_progress WHERE curriculum_id=? AND reading_id=?", (cid, part["id"]))
                 elif kind == "lineage":
                     rel = str(op.get("relation") or "extends")
                     if rel not in LINEAGE:
@@ -253,11 +257,32 @@ def edit(lg: Ledger, actor: Actor, project: str, ref: str | None, ops: list[dict
     return {"curriculum": cid, "added": added, "changed": done, "problems": problems}
 
 
+def progress(lg: Ledger, actor: Actor, project: str, ref: str, reading: str, done: bool) -> bool:
+    """Mark one reading done (or not) for this learner. Done also raises the project's read level for the work to what the
+    reading's depth asks for; undoing leaves the read level alone."""
+    with lg.db.tx(actor) as tx:
+        c = _cur(tx.conn, project, ref)
+        part = _part(tx, c["id"], reading, {}, "reading")
+        if done:
+            tx.execute("INSERT OR IGNORE INTO curriculum_progress(curriculum_id,reading_id,principal_id,done_at) VALUES(?,?,?,?)",
+                       (c["id"], part["id"], actor.principal_id or actor.name, now()))
+            if part["work_id"]:
+                bump_read(tx, project, part["work_id"], READ_FOR.get(json.loads(part["body"]).get("depth") or "read", "sections"))
+        else:
+            tx.execute("DELETE FROM curriculum_progress WHERE curriculum_id=? AND reading_id=? AND principal_id=?",
+                       (c["id"], part["id"], actor.principal_id or actor.name))
+        tx.log("curriculum.progress", {"curriculum": c["id"], "reading": part["id"], "done": done}, project=project)
+    return done
+
+
 # ------------------------------------------------------------------------------------------------------- reading
-def get(lg: Ledger, project: str, ref: str) -> dict:
+def get(lg: Ledger, project: str, ref: str, learner: str | None = None) -> dict:
+    """The whole curriculum; with a learner (a principal id), each reading says whether they have finished it."""
     with lg.db.read() as conn:
         c = _cur(conn, project, ref)
         parts = conn.execute("SELECT * FROM curriculum_parts WHERE curriculum_id=? ORDER BY seq", (c["id"],)).fetchall()
+        finished = {r["reading_id"] for r in conn.execute(
+            "SELECT reading_id FROM curriculum_progress WHERE curriculum_id=? AND principal_id=?", (c["id"], learner))} if learner else set()
         stages = [{"id": p["id"], "title": p["title"], **json.loads(p["body"]), "readings": []} for p in parts if p["kind"] == "stage"]
         by_stage = {s["id"]: s for s in stages}
         work_ids = [p["work_id"] for p in parts if p["kind"] == "reading"]
@@ -272,7 +297,8 @@ def get(lg: Ledger, project: str, ref: str) -> dict:
                               "venue": csl.get("container-title") or "", "read": w["read_depth"] or ""}
         for p in parts:
             if p["kind"] == "reading" and p["stage"] in by_stage:
-                by_stage[p["stage"]]["readings"].append({"id": p["id"], **json.loads(p["body"]), "work": works.get(p["work_id"])})
+                by_stage[p["stage"]]["readings"].append({"id": p["id"], **json.loads(p["body"]), "work": works.get(p["work_id"]),
+                                                         **({"done": p["id"] in finished} if learner else {})})
         lineage, cites = [], []
         if work_ids:
             marks = ",".join("?" * len(work_ids))

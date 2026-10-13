@@ -127,9 +127,18 @@ def test_rest_routes_and_reading_progress(client):
     made = c.post("/api/v1/curricula", json={"title": "Gating", "ops": [{"op": "stage", "key": "a", "title": "Core"},
                                                                       {"op": "read", "stage": "a", "work": "yang2024gated", "why": "w"}]}, headers=h).json()
     assert made["curriculum"] == "cur:gating" and made["added"] == ["s1", "r1"]
+    # an agent reading the paper raises the project's read level, but the learner hasn't finished the reading
     c.post("/api/v1/tools/update_work", json={"items": [{"work": "yang2024gated", "read": "skimmed"}]}, headers=h)
     data = c.get("/api/v1/curricula/cur:gating", headers=h).json()
-    assert data["stages"][0]["readings"][0]["work"]["read"] == "skimmed"
+    assert data["stages"][0]["readings"][0]["work"]["read"] == "skimmed" and data["stages"][0]["readings"][0]["done"] is False
+    # finishing it is the learner's own, and raises the read level to what the depth asks for (read → sections)
+    assert c.post("/api/v1/curricula/cur:gating/progress", json={"reading": "r1", "done": True}, headers=h).json() == {"done": True}
+    reading = c.get("/api/v1/curricula/cur:gating", headers=h).json()["stages"][0]["readings"][0]
+    assert reading["done"] is True and reading["work"]["read"] == "sections"
+    c.post("/api/v1/curricula/cur:gating/progress", json={"reading": "r1", "done": False}, headers=h)
+    reading = c.get("/api/v1/curricula/cur:gating", headers=h).json()["stages"][0]["readings"][0]
+    assert reading["done"] is False and reading["work"]["read"] == "sections"
+    assert c.post("/api/v1/curricula/cur:gating/progress", json={"reading": "s1", "done": True}, headers=h).status_code == 404
     assert c.get("/api/v1/curricula", headers=h).json()[0]["readings"] == 1
     md = c.get("/api/v1/curricula/cur:gating/markdown", headers=h)
     assert md.status_code == 200 and md.text.startswith("# Gating")

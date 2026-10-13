@@ -4,15 +4,14 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../app/context";
 import { api, CReading, CStage, CStep, Curriculum } from "../lib/api";
 import { cssVar as css } from "../lib/format";
-import { READ_LEVELS } from "../lib/kinds";
 import { Icon } from "../ui/Icon";
 import { MenuItem, useOverlays } from "../ui/overlays";
 import { hours } from "./Curricula";
 
-// a reading counts as done once the project's read level reaches what its depth asks for
+// done is the learner's own (agents reading a paper raise the library's read level, not anyone's progress);
+// finishing a reading also marks the paper read this far in the library
 const NEED: Record<string, string> = { skim: "skimmed", read: "sections", study: "full" };
-const rank = (level: string) => READ_LEVELS.indexOf(level);
-const done = (r: CReading) => !!r.work && rank(r.work.read) >= rank(NEED[r.depth ?? "read"]);
+const done = (r: CReading) => !!r.done;
 
 const RELATION_WORD: Record<string, string> = { extends: "extends", generalizes: "generalizes", simplifies: "simplifies", fixes: "fixes",
   reinterprets: "reinterprets", outperforms: "outperforms", contradicts: "contradicts", compares_to: "compares to", instance_of: "is a kind of",
@@ -52,9 +51,8 @@ export default function CurriculumPage() {
   const minutes = readings.reduce((a, r) => a + (r.minutes ?? 0), 0);
   const finished = readings.filter(done).length;
 
-  const setRead = async (r: CReading, level: string) => {
-    if (!r.work) return;
-    await api.tool("update_work", { items: [{ work: r.work.citekey, read: level }] }).catch((e) => toast(String(e), true));
+  const finish = async (r: CReading, value: boolean) => {
+    await api.curriculumProgress(id, r.id, value).catch((e) => toast(String(e), true));
     load();
   };
 
@@ -155,8 +153,9 @@ export default function CurriculumPage() {
                     <div className="reading-side">
                       <span className={`depth d-${r.depth ?? "read"}`}>{r.depth ?? "read"}</span>
                       {r.minutes ? <span className="small muted">{r.minutes} min</span> : null}
-                      <button className={`btn sm${done(r) ? " ok" : ""}`} title={done(r) ? `Read: ${r.work?.read}` : `Mark as read (${NEED[r.depth ?? "read"]})`}
-                              onClick={() => setRead(r, done(r) ? "abstract" : NEED[r.depth ?? "read"])}>
+                      <button className={`btn sm${done(r) ? " ok" : ""}`}
+                              title={done(r) ? "Finished. Click to undo" : `Mark done; the paper also counts as read (${NEED[r.depth ?? "read"]}) in the library`}
+                              onClick={() => finish(r, !done(r))}>
                         <Icon name="check" />{done(r) ? "Done" : "Mark done"}
                       </button>
                       <button className="btn ghost sm icon" aria-label="More" onClick={(e) => menu(e, readingMenu(s, r, j))}><Icon name="more" /></button>
@@ -195,31 +194,45 @@ function Lineage({ c }: { c: Curriculum }) {
 
   useEffect(() => {
     if (!box.current) return;
+    // a column per year, a lane per stage; a lane is as tall as its most crowded year, so lanes never overlap
     const ids = Object.keys(c.works);
     const years = [...new Set(ids.map((w) => c.works[w].year ?? 0))].sort((a, b) => a - b);
-    const col = (y: number) => years.indexOf(y) * 170;
+    const COL = 210, ROW = 50, GAP = 34;
+    const col = (y: number) => years.indexOf(y) * COL;
+    const cell = (w: string) => `${c.works[w].year ?? 0}:${stageOf[w] ?? 0}`;
+    const crowd: Record<string, number> = {};
+    ids.forEach((w) => { crowd[cell(w)] = (crowd[cell(w)] ?? 0) + 1; });
+    const laneTop: number[] = [];
+    let top = 0;
+    c.stages.forEach((_, i) => {
+      laneTop[i] = top;
+      top += Math.max(1, ...Object.entries(crowd).filter(([k]) => k.endsWith(`:${i}`)).map(([, n]) => n)) * ROW + GAP;
+    });
     const used: Record<string, number> = {};
     const pos = (w: string) => {
-      const y = c.works[w].year ?? 0, lane = stageOf[w] ?? 0, k = `${y}:${lane}`;
-      const n = (used[k] = (used[k] ?? -1) + 1);
-      return { x: col(y), y: lane * 120 + n * 46 };
+      const n = (used[cell(w)] = (used[cell(w)] ?? -1) + 1);
+      return { x: col(c.works[w].year ?? 0), y: (laneTop[stageOf[w] ?? 0] ?? 0) + n * ROW };
     };
+    const short = (t: string) => { const head = t.split(/[:—(]/)[0].trim(); return head.length > 26 ? head.slice(0, 25) + "…" : head; };
     const lineagePairs = new Set(c.lineage.map((e) => `${e.builds_on}>${e.work}`));
     const ink = css("--ink"), pen = css("--pen"), line = css("--line-strong"), surface = css("--surface"), muted = css("--muted");
     const cy = cytoscape({
       container: box.current, wheelSensitivity: 0.25, minZoom: 0.2, maxZoom: 2.5,
       elements: [
-        ...years.map((y) => ({ data: { id: `year${y}`, label: y ? String(y) : "?", year: 1 }, position: { x: col(y), y: -70 }, selectable: false, grabbable: false })),
+        ...years.map((y) => ({ data: { id: `year${y}`, label: y ? String(y) : "?", year: 1 }, position: { x: col(y), y: -50 }, selectable: false, grabbable: false })),
+        ...c.stages.map((st, i) => ({ data: { id: `lane${i}`, label: `${i + 1}  ${short(st.title)}`, year: 1, lane: 1 },
+          position: { x: -70, y: laneTop[i] }, selectable: false, grabbable: false })),
         ...ids.map((w) => ({ data: { id: w, label: c.works[w].citekey }, position: pos(w) })),
         ...c.cites.filter((e) => !lineagePairs.has(`${e.to}>${e.from}`)).map((e, i) => ({ data: { id: `c${i}`, source: e.to, target: e.from, cite: 1 } })),
         ...c.lineage.map((e) => ({ data: { id: e.id, source: e.builds_on, target: e.work, label: RELATION_WORD[e.relation] ?? e.relation, step: 1 } })),
       ],
-      layout: { name: "preset", fit: true, padding: 50 },
+      layout: { name: "preset", fit: false },
       style: [
         { selector: "node", style: { label: "data(label)", "font-family": "Instrument Sans, sans-serif", "font-size": 11, "font-weight": 600, color: ink,
           "text-valign": "bottom", "text-margin-y": 4, width: 16, height: 16, "background-color": pen,
           "text-background-color": surface, "text-background-opacity": 0.85, "text-background-padding": "2px" } },
         { selector: "node[year = 1]", style: { "background-opacity": 0, "font-size": 13, color: muted, "text-valign": "center", width: 1, height: 1, events: "no" } },
+        { selector: "node[lane = 1]", style: { "text-halign": "left", "font-size": 12, "text-background-opacity": 0 } },
         { selector: "edge", style: { "curve-style": "bezier", width: 1.6, "line-color": pen, "target-arrow-color": pen, "target-arrow-shape": "triangle",
           label: "data(label)", "font-size": 10, color: ink, "text-rotation": "autorotate", "text-background-color": surface, "text-background-opacity": 0.9,
           "text-background-padding": "2px" } },
@@ -227,8 +240,16 @@ function Lineage({ c }: { c: Curriculum }) {
         { selector: ":selected", style: { "overlay-color": pen, "overlay-opacity": 0.15 } },
       ],
     });
+    // readable rather than squeezed: zoom no lower than 0.75 (pan sideways for the rest), the box as tall as the graph
+    const PAD = 40, el = box.current;
+    const bb = cy.elements().boundingBox({});
+    const z = Math.min(1, Math.max(0.75, (el.clientWidth - 2 * PAD) / bb.w));
+    el.style.height = `${Math.round(Math.min(Math.max(bb.h * z + 2 * PAD, 260), 1100))}px`;
+    cy.resize();
+    cy.zoom(z);
+    cy.pan({ x: PAD - bb.x1 * z, y: PAD - bb.y1 * z });
     cy.on("tap", "edge[step = 1]", (e) => setPicked({ step: c.lineage.find((s) => s.id === e.target.id()) }));
-    cy.on("tap", "node[year != 1]", (e) => setPicked({ work: e.target.id() }));
+    cy.on("tap", "node[^year]", (e) => setPicked({ work: e.target.id() }));
     cy.on("tap", (e) => { if (e.target === cy) setPicked(null); });
     return () => cy.destroy();
   }, [c, stageOf]);
