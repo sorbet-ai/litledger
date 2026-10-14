@@ -15,8 +15,6 @@
   --pen-ink: #f6f1e7;
   --pen-soft: #e2ebe3;
   --pen-mid: #9dbfab;
-  --link: #3d6385;      /* blueberry: links and identifiers */
-  --blue-soft: #e3ebf2;
   --marker: #ecd27e;
   --marker-soft: #f7ecc6;
   --marker-ink: #4a3d10;
@@ -63,8 +61,6 @@
   --pen-ink: #14201a;
   --pen-soft: #22362d;
   --pen-mid: #5e8c76;
-  --link: #a9c4de;
-  --blue-soft: #1f2c38;
   --marker: #e2c76e;
   --marker-soft: #3b3419;
   --marker-ink: #f6e6ad;
@@ -93,7 +89,7 @@
 .rail {
   --ink: #f3ecdd; --ink-2: #d6dccf; --muted: #9fb3a8; --surface: #2a4a3e; --surface-2: #2a4a3e; --surface-3: #33574a;
   --line: #3a5c4f; --line-strong: #46695b; --pen: #f3ecdd; --pen-ink: #20392f; --pen-soft: #33574a; --danger: #f0a097;
-  --link: #f3ecdd; color: var(--ink); color-scheme: dark;
+  color: var(--ink); color-scheme: dark;
 }
 .rail .brand .light-only { display: none; }
 .rail .brand .dark-only { display: block; }
@@ -101,7 +97,7 @@
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 500 14.5px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
-a { color: var(--link); text-decoration: none; }
+a { color: var(--pen); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 2px; }
 ::selection { background: var(--marker); color: #2a2418; }
 :focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
