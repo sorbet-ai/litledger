@@ -9,6 +9,7 @@ import { Icon } from "../ui/Icon";
 import { MenuButton, MenuItem, rowKeys, useOverlays } from "../ui/overlays";
 import { TagChip, usePicker } from "../ui/pickers";
 import { exportItems, useWorkMenu } from "../works/workMenu";
+import { Prose } from "../ui/Prose";
 
 function AddPapers({ close, done }: { close: () => void; done: () => void }) {
   const { toast } = useOverlays();
@@ -74,7 +75,7 @@ function Preview({ w, reload }: { w: WorkBrief; reload: () => void }) {
         <input className="input" style={{ height: 24, width: 130, fontSize: 12 }} placeholder="+ tag" value={newTag} onChange={(e) => setNewTag(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && newTag.trim()) { run("tag", { action: "apply", tags: [newTag.trim()], works: [w.citekey] }); setNewTag(""); } }} />
       </div>
-      {w.why && <div className="why">{w.why}</div>}
+      {w.why && <Prose className="why" text={w.why} />}
       {detail?.abstract && <p className="serif" style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: "var(--ink-2)", maxHeight: 260, overflow: "auto" }}>{detail.abstract}</p>}
       <div className="row">
         <Link className="btn primary sm" to={`/work/${encodeURIComponent(w.citekey)}`}>Open</Link>

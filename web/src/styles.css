@@ -239,7 +239,7 @@ kbd { font: 600 10.5px var(--sans); padding: 1px 5px; border-radius: 4px; border
 .toc a:hover { background: var(--surface-3); text-decoration: none; }
 .passage { font-family: var(--serif); font-weight: 400; font-size: 17px; line-height: 1.62; max-width: 72ch; padding: 4px 0 12px; overflow-wrap: anywhere; position: relative; }
 .passage .pno { position: absolute; left: -46px; top: 8px; font: 700 10.5px var(--sans); color: var(--muted); width: 38px; text-align: right; }
-.passage.noted .body { background: linear-gradient(transparent 10%, var(--marker-soft) 10%, var(--marker-soft) 90%, transparent 90%); }
+.passage.noted .body { background: var(--marker-soft); border-radius: 6px; box-shadow: 0 0 0 4px var(--marker-soft); }
 .sec-head { font-weight: 800; font-size: 13px; color: var(--ink-2); margin: 22px 0 6px; }
 .abstract { font-family: var(--serif); font-weight: 400; font-size: 17px; line-height: 1.6; color: var(--ink); max-width: 76ch; }
 .quote-pop { position: fixed; z-index: 50; }
@@ -512,3 +512,15 @@ dl.fields dd { margin: 0; }
 /* maths from papers' text: the size of the words around it, a wide display formula scrolls instead of overflowing */
 .tex .katex { font-size: 1.05em; }
 .tex-display { display: block; overflow-x: auto; overflow-y: hidden; margin: 4px 0; }
+
+/* reading text set by Prose (Knuth-Plass, TeX hyphenation): each set line is justified to the measure on its own */
+.para { display: block; }
+.para + .para, .para + .tex-display, .tex-display + .para { margin-top: 0.65em; }
+.para.typeset .tl { display: block; text-align: justify; text-align-last: justify; white-space: nowrap; }
+.para.typeset .tl.last { text-align-last: auto; }
+.hy { user-select: none; }
+.tsp { display: inline-block; width: 0.08em; overflow: hidden; white-space: pre; vertical-align: top; }
+.tex-display { display: block; text-align: center; margin: 0.4em 0; overflow-x: auto; overflow-y: hidden; }
+.passage, .abstract, .note blockquote, .why, .cur-intro, .lineage blockquote {
+  font-kerning: normal; font-variant-ligatures: common-ligatures; text-rendering: optimizeLegibility; hanging-punctuation: first; }
+.note .note-text { margin-top: 6px; }

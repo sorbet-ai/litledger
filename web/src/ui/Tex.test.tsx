@@ -35,6 +35,19 @@ describe("Tex", () => {
     sel.addRange(range);
     expect(selectedSource(sel)).toBe("$\\beta_{t} \\in [0, 2]$ per");
   });
+  it("gives back the stored text from typeset lines: no added hyphens, words kept apart", () => {
+    const p = document.createElement("p");
+    p.innerHTML = '<span class="para typeset"><span class="tl">a multiplica<span class="hy">-</span></span>'
+      + '<span class="tl">tion of <span class="tex" data-tex="$x_t$">x</span> and </span><span class="tl last">more</span></span>';
+    document.body.appendChild(p);
+    const range = document.createRange();
+    range.selectNodeContents(p);
+    const sel = window.getSelection()!;
+    sel.removeAllRanges();
+    sel.addRange(range);
+    expect(selectedSource(sel)).toBe("a multiplication of $x_t$ and more");
+    p.remove();
+  });
   it("shows text that isn't TeX as written", async () => {
     const { container } = render(<Tex text="plain words, no maths" />);
     expect(container.textContent).toBe("plain words, no maths");

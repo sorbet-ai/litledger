@@ -8,6 +8,7 @@ import { Icon } from "../ui/Icon";
 import { MenuItem, useOverlays } from "../ui/overlays";
 import { hours } from "./Curricula";
 import { Tex } from "../ui/Tex";
+import { Prose } from "../ui/Prose";
 
 // done is the learner's own (agents reading a paper raise the library's read level, not anyone's progress);
 // finishing a reading also marks the paper read this far in the library
@@ -118,7 +119,7 @@ export default function CurriculumPage() {
           </span>
         )}
       </div>
-      {c.intro && <div className="cur-intro"><Tex text={c.intro} /></div>}
+      {c.intro && <Prose className="cur-intro" text={c.intro} />}
 
       <div className="seg" style={{ margin: "18px 0 14px" }}>
         <button className={tab === "syllabus" ? "on" : ""} onClick={() => setTab("syllabus")}>Syllabus</button>
@@ -147,7 +148,7 @@ export default function CurriculumPage() {
                       </div>
                       {r.work && <div className="w-meta"><span>{r.work.authors}</span>{r.work.year && <span>{r.work.year}</span>}
                         {r.work.venue && <span>{r.work.venue}</span>}<span className="mono">{r.work.citekey}</span></div>}
-                      {r.why && <p className="why"><Tex text={r.why} /></p>}
+                      {r.why && <Prose as="p" className="why" text={r.why} />}
                       {r.focus && <div className="focus"><b>Focus</b> <Tex text={r.focus} /></div>}
                       {!!r.concepts?.length && <div className="concepts">{r.concepts.map((k) => <span key={k} className="chip">{k}</span>)}</div>}
                     </div>
@@ -271,7 +272,7 @@ function Lineage({ c }: { c: Curriculum }) {
         <div className="panel pad picked">
           <b>{key(picked.step.work)}</b> {RELATION_WORD[picked.step.relation] ?? picked.step.relation} <b>{key(picked.step.builds_on)}</b>
           {picked.step.change && <p><Tex text={picked.step.change} /></p>}
-          {picked.step.evidence ? <blockquote><Tex text={picked.step.evidence} /></blockquote> : <div className="small muted">No quote recorded for this step.</div>}
+          {picked.step.evidence ? <Prose as="blockquote" text={picked.step.evidence} /> : <div className="small muted">No quote recorded for this step.</div>}
         </div>
       )}
       {picked?.work && (
@@ -287,7 +288,7 @@ function Lineage({ c }: { c: Curriculum }) {
             <span className="yr">{c.works[e.work]?.year ?? ""}</span>
             <div>
               <div><b>{key(e.work)}</b> {RELATION_WORD[e.relation] ?? e.relation} <b>{key(e.builds_on)}</b>{e.change && <>: <Tex text={e.change} /></>}</div>
-              {e.evidence ? <blockquote><Tex text={e.evidence} /></blockquote> : <span className="small muted">no quote recorded</span>}
+              {e.evidence ? <Prose as="blockquote" text={e.evidence} /> : <span className="small muted">no quote recorded</span>}
             </div>
           </li>
         ))}

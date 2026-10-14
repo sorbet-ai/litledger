@@ -10,6 +10,7 @@ import { useOverlays } from "../ui/overlays";
 import { KindLabel, TagChip } from "../ui/pickers";
 import { AgentBrief, useWorkMenu } from "../works/workMenu";
 import { selectedSource, Tex } from "../ui/Tex";
+import { Prose } from "../ui/Prose";
 
 type FullText = Awaited<ReturnType<typeof api.passages>>;
 
@@ -95,7 +96,7 @@ function Reader({ work, onChange }: { work: WorkDetail; onChange: () => void }) 
                   ]);
                 }}>
                 <span className="pno">p{p.seq}</span>
-                <span className="body"><Tex text={p.text} /></span>
+                <Prose className="body" text={p.text} />
               </div>
             </div>
           );
@@ -159,7 +160,7 @@ export default function WorkPage() {
             })}
             {(w.flags ?? []).map((f) => <span key={f} className="badge" style={{ background: "var(--danger-soft)", color: "var(--danger)" }}>{f}</span>)}
           </div>
-          {typeof csl.abstract === "string" && <p className="abstract" style={{ marginTop: 18 }}><Tex text={csl.abstract} /></p>}
+          {typeof csl.abstract === "string" && <Prose as="p" className="abstract" text={csl.abstract} />}
           <div className="tabs">
             {[["notes", "Notes", w.counts.notes], ["text", "Full text", 0], ["knowledge", "Knowledge", knowledge.length], ["links", "Links", w.counts.links],
               ["cited", "Cited by", w.counts.cited_by_local], ["history", "History", 0]].map(([k, label, n]) => (
@@ -191,8 +192,8 @@ export default function WorkPage() {
                     {n.verification === "verified" && <span className="badge verified">quote verified</span>}
                     <span className="muted">{n.by ?? ""}</span><span className="muted">{n.created_at.slice(0, 10)}</span>
                   </div>
-                  {n.text && n.text !== n.quote && <div style={{ marginTop: 6 }}><Tex text={n.text} /></div>}
-                  {n.quote && <blockquote><Tex text={n.quote} /></blockquote>}
+                  {n.text && n.text !== n.quote && <Prose className="note-text" text={n.text} />}
+                  {n.quote && <Prose as="blockquote" text={n.quote} />}
                 </div>
               ))}
               {!w.notes?.length && <p className="muted">No notes in this project yet.</p>}
@@ -240,7 +241,7 @@ export default function WorkPage() {
           {tab === "cited" && (
             <div className="stack">
               {(w.cited_by ?? []).map((c, i) => (
-                <div key={i} className="note"><Link to={`/work/${encodeURIComponent(c.citekey)}`} className="key">{c.citekey}</Link><blockquote><Tex text={c.sentence} /></blockquote></div>
+                <div key={i} className="note"><Link to={`/work/${encodeURIComponent(c.citekey)}`} className="key">{c.citekey}</Link><Prose as="blockquote" text={c.sentence} /></div>
               ))}
               {!w.cited_by?.length && <p className="muted">No papers in your library cite this one yet.</p>}
             </div>
@@ -267,7 +268,7 @@ export default function WorkPage() {
                 <div className="why" style={{ cursor: "text", minHeight: 22 }} onClick={async () => {
                   const why = await ask("Why it matters", { label: "One line", type: "textarea", value: w.why ?? "" }, "Save");
                   if (why !== null) act("update_work", { items: [{ work: w.citekey, why }] });
-                }}>{w.why || <span className="muted" style={{ fontStyle: "normal" }}>Add a reason…</span>}</div>
+                }}>{w.why ? <Prose text={w.why} /> : <span className="muted" style={{ fontStyle: "normal" }}>Add a reason…</span>}</div>
               </label>
               <label className="field">Reading
                 <select className="select" value={w.read ?? ""} onChange={(e) => act("update_work", { items: [{ work: w.citekey, read: e.target.value }] })}>
