@@ -1,7 +1,7 @@
-import "@fontsource-variable/nunito/wght.css";
-import "@fontsource-variable/nunito/wght-italic.css";
-import "@fontsource-variable/newsreader/opsz.css";
-import "@fontsource-variable/newsreader/opsz-italic.css";
+import "@fontsource-variable/fraunces/full.css";
+import "@fontsource-variable/fraunces/full-italic.css";
+import "@fontsource-variable/nunito-sans/wght.css";
+import "@fontsource-variable/nunito-sans/wght-italic.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";

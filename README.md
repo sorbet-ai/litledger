@@ -1,7 +1,7 @@
 <h1>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/litledger-dark.png">
-    <img src="docs/logo/litledger.png" alt="litledger" width="360">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/litledger-dark.svg">
+    <img src="docs/logo/litledger.svg" alt="litledger" width="360">
   </picture>
 </h1>
 

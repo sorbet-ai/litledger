@@ -271,7 +271,7 @@ export default function GraphPage() {
         container: box.current, elements, wheelSensitivity: 0.25, maxZoom: 3, minZoom: 0.08,
         layout: { name: "preset", fit: true, padding: 40 },
         style: [
-          { selector: "node", style: { label: "data(shown)", "font-family": "Nunito Variable, Nunito, sans-serif", "font-size": (n: cytoscape.NodeSingular) => n.data("fs") ?? n.data("fsize"), color: ink,
+          { selector: "node", style: { label: "data(shown)", "font-family": "Nunito Sans Variable, Nunito Sans, sans-serif", "font-size": (n: cytoscape.NodeSingular) => n.data("fs") ?? n.data("fsize"), color: ink,
             "font-weight": 600, "text-valign": ((n: cytoscape.NodeSingular) => n.data("valign") ?? "bottom") as unknown as "bottom",
             "text-halign": ((n: cytoscape.NodeSingular) => n.data("halign") ?? "center") as unknown as "center", "text-margin-y": 0, "text-wrap": "ellipsis", "text-max-width": "400px",
             "text-background-color": surface, "text-background-opacity": 0.85, "text-background-padding": "2px", "text-background-shape": "roundrectangle",

@@ -230,7 +230,7 @@ function Lineage({ c }: { c: Curriculum }) {
       ],
       layout: { name: "preset", fit: false },
       style: [
-        { selector: "node", style: { label: "data(label)", "font-family": "Nunito Variable, Nunito, sans-serif", "font-size": 11, "font-weight": 600, color: ink,
+        { selector: "node", style: { label: "data(label)", "font-family": "Nunito Sans Variable, Nunito Sans, sans-serif", "font-size": 11, "font-weight": 600, color: ink,
           "text-valign": "bottom", "text-margin-y": 4, width: 16, height: 16, "background-color": pen,
           "text-background-color": surface, "text-background-opacity": 0.85, "text-background-padding": "2px" } },
         { selector: "node[year = 1]", style: { "background-opacity": 0, "font-size": 13, color: muted, "text-valign": "center", width: 1, height: 1, events: "no" } },

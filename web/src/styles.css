@@ -1,102 +1,116 @@
-/* litledger — Sorbet AI's sundae palette: cream paper, a pastel mint rail from the sundae's leaves, the logo's deep
-   green for ink you act with, berry for warnings, lemon highlighter for your own thinking. Nunito, as on sorbet-ai.com. */
+/* litledger — Sorbet AI's evening-pistachio look: cream paper, a deep green rail like sorbet-ai.com's header, sage
+   for selection, berry for warnings and the "lit", vanilla highlighter for your own thinking. Fraunces for headings
+   and reading, Nunito Sans for the interface. */
 :root {
-  --bg: #fbf5e1;
-  --surface: #fffdf6;
-  --surface-2: #f8f0d8;
-  --surface-3: #f1e5c3;
-  --rail: #d9efe4;
-  --rail-line: #bfe0d0;
-  --ink: #2a2418;
-  --ink-2: #655a3f;
-  --muted: #968a6c;
-  --line: #ece2c4;
-  --line-strong: #dccfa6;
-  --pen: #0d4a3d;
-  --pen-ink: #fffdf6;
-  --pen-soft: #d9efe4;
-  --pen-mid: #7cc4a6;
-  --marker: #f8d56a;
-  --marker-soft: #fcebb2;
-  --marker-ink: #4a3a0a;
-  --danger: #d8363b;
-  --danger-soft: #fde2dd;
-  --ok: #2d7a55;
-  --ok-soft: #dbefe2;
-  --shadow: 0 1px 0 rgba(42, 36, 24, 0.04), 0 8px 24px -12px rgba(101, 90, 63, 0.3);
-  --shadow-pop: 0 2px 6px rgba(42, 36, 24, 0.08), 0 18px 40px -16px rgba(101, 90, 63, 0.42);
+  --bg: #f6f1e7;
+  --surface: #fffdf8;
+  --surface-2: #f8f3ea;
+  --surface-3: #efe8da;
+  --ink: #1f2b26;
+  --ink-2: #4f5a53;
+  --muted: #858c84;
+  --line: #e6dfcf;
+  --line-strong: #d4cbb6;
+  --pen: #20392f;
+  --pen-ink: #f6f1e7;
+  --pen-soft: #e2ebe3;
+  --pen-mid: #9dbfab;
+  --link: #3d6385;      /* blueberry: links and identifiers */
+  --blue-soft: #e3ebf2;
+  --marker: #ecd27e;
+  --marker-soft: #f7ecc6;
+  --marker-ink: #4a3d10;
+  --danger: #b9473f;
+  --danger-soft: #f6e0dc;
+  --ok: #2f6e50;
+  --ok-soft: #dfece2;
+  --shadow: 0 1px 0 rgba(31, 43, 38, 0.04), 0 8px 24px -12px rgba(31, 43, 38, 0.28);
+  --shadow-pop: 0 2px 6px rgba(31, 43, 38, 0.08), 0 18px 40px -16px rgba(31, 43, 38, 0.4);
+  /* the rail: deep green in both themes */
+  --rail: #20392f;
+  --rail-line: #2c4a3e;
   /* knowledge kinds: the sundae's scoops and leaves, deep enough to read as text */
-  --k-method: #0d6b57;
-  --k-model: #8a5a34;
-  --k-dataset: #2a8577;
-  --k-benchmark: #b9651f;
-  --k-metric: #7458a3;
-  --k-result: #2d7a55;
-  --k-concept: #a84e78;
-  --k-task: #c8383d;
-  --k-claim: #655a3f;
-  --k-limitation: #a8352c;
-  --k-work: #2a2418;
-  --sans: "Nunito Variable", Nunito, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: "Newsreader Variable", "Newsreader", Georgia, serif;
+  --k-method: #2f6e58;
+  --k-model: #8a5f3c;
+  --k-dataset: #3d7f74;
+  --k-benchmark: #a8642c;
+  --k-metric: #6f5c98;
+  --k-result: #2f6e50;
+  --k-concept: #a24f71;
+  --k-task: #b9473f;
+  --k-claim: #5d6359;
+  --k-limitation: #9c3d33;
+  --k-work: #1f2b26;
+  --sans: "Nunito Sans Variable", "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Fraunces Variable", "Fraunces", Georgia, serif;
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 18px;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  /* chocolate after dark: cocoa surfaces, a deep mint rail, the same scoops lightened */
-  --bg: #19150f;
-  --surface: #221d15;
-  --surface-2: #2a241a;
-  --surface-3: #342c20;
-  --rail: #16261f;
-  --rail-line: #22382e;
-  --ink: #f6eed8;
-  --ink-2: #d2c4a2;
-  --muted: #9a8d6f;
-  --line: #372f23;
-  --line-strong: #4a3f2e;
-  --pen: #8edcbf;
-  --pen-ink: #10241d;
-  --pen-soft: #1f3a30;
-  --pen-mid: #3f8a70;
-  --marker: #ebc85e;
-  --marker-soft: #4a3b14;
-  --marker-ink: #f8e6a8;
-  --danger: #ff8d84;
-  --danger-soft: #3e1d1a;
-  --ok: #86d3a6;
-  --ok-soft: #173426;
+  /* pistachio at night: green-black surfaces, cream ink, the same scoops lightened */
+  --bg: #121a16;
+  --surface: #18221d;
+  --surface-2: #1d2823;
+  --surface-3: #25322c;
+  --ink: #f3ecdd;
+  --ink-2: #cdc5b1;
+  --muted: #8e978e;
+  --line: #2a3731;
+  --line-strong: #3a4a42;
+  --pen: #b9dcc8;
+  --pen-ink: #14201a;
+  --pen-soft: #22362d;
+  --pen-mid: #5e8c76;
+  --link: #a9c4de;
+  --blue-soft: #1f2c38;
+  --marker: #e2c76e;
+  --marker-soft: #3b3419;
+  --marker-ink: #f6e6ad;
+  --danger: #f0a097;
+  --danger-soft: #3c1f1c;
+  --ok: #98cfae;
+  --ok-soft: #183528;
   --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
   --shadow-pop: 0 2px 6px rgba(0, 0, 0, 0.4), 0 18px 40px -16px rgba(0, 0, 0, 0.8);
-  --k-method: #8edcbf;
+  --rail: #1a2d25;
+  --rail-line: #26403a;
+  --k-method: #9fd3bd;
   --k-model: #d9a77c;
-  --k-dataset: #6fcfbf;
+  --k-dataset: #7fcfc1;
   --k-benchmark: #f0a868;
   --k-metric: #c0a8ec;
-  --k-result: #86d3a6;
+  --k-result: #98cfae;
   --k-concept: #eba0c4;
-  --k-task: #ff8d84;
-  --k-claim: #d2c4a2;
+  --k-task: #f0a097;
+  --k-claim: #cdc5b1;
   --k-limitation: #f0907f;
-  --k-work: #f6eed8;
+  --k-work: #f3ecdd;
   color-scheme: dark;
 }
+/* inside the rail the page's colours turn over: cream ink on the deep green */
+.rail {
+  --ink: #f3ecdd; --ink-2: #d6dccf; --muted: #9fb3a8; --surface: #2a4a3e; --surface-2: #2a4a3e; --surface-3: #33574a;
+  --line: #3a5c4f; --line-strong: #46695b; --pen: #f3ecdd; --pen-ink: #20392f; --pen-soft: #33574a; --danger: #f0a097;
+  --link: #f3ecdd; color: var(--ink); color-scheme: dark;
+}
+.rail .brand .light-only { display: none; }
+.rail .brand .dark-only { display: block; }
 
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 500 14.5px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
-a { color: var(--pen); text-decoration: none; }
+a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 2px; }
 ::selection { background: var(--marker); color: #2a2418; }
 :focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
-h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -0.01em; }
-h1 { font-weight: 900; }
-h1 { font-size: 24px; line-height: 1.2; }
+h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.005em; }
+h1, h2, .dialog h2 { font-family: var(--serif); font-weight: 500; font-variation-settings: "SOFT" 100; }
+h1 { font-size: 26px; line-height: 1.2; }
 h2 { font-size: 17px; }
 h3 { font-size: 14px; }
-.serif { font-family: var(--serif); font-weight: 400; }
+.serif { font-family: var(--serif); font-weight: 400; font-variation-settings: "SOFT" 50; }
 .muted { color: var(--muted); }
 .small { font-size: 12.5px; }
 .tiny { font-size: 11.5px; }
@@ -153,8 +167,8 @@ kbd { font: 600 10.5px var(--sans); padding: 1px 5px; border-radius: 4px; border
 .nav a { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 999px; color: var(--ink-2); font-weight: 700;
   border: 2px solid transparent; }
 .nav a svg { width: 16px; height: 16px; opacity: 0.8; flex: none; }
-.nav a:hover { background: color-mix(in srgb, var(--surface) 55%, transparent); text-decoration: none; }
-.nav a.active { background: var(--surface); color: var(--pen); border-color: var(--pen); }
+.nav a:hover { background: rgba(243, 236, 221, 0.1); text-decoration: none; }
+.nav a.active { background: #f3ecdd; color: #20392f; border-color: #f3ecdd; }
 .nav a.active svg { opacity: 1; }
 .nav a .count { margin-left: auto; font-size: 11px; color: var(--danger); font-weight: 600; }
 .rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--ink-2); padding: 0 8px; }
